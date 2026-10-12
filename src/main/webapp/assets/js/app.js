@@ -529,7 +529,11 @@ async function inspectIncident(id) {
         sevBadge.className = `badge ${getSeverityBadgeClass(inc.severity)}`;
         sevBadge.textContent = `${inc.severity} • ${inc.severityInfo ? inc.severityInfo.classification : ''}`;
 
-        document.getElementById('modal-status-badge').textContent = inc.status;
+        const statusBadge = document.getElementById('modal-status-badge');
+        if (statusBadge) {
+            statusBadge.innerHTML = `<span class="status-badge ${getStatusBadgeClass(inc.status)}">${escapeHtml(inc.status)}</span>`;
+        }
+
         document.getElementById('modal-reporter').textContent = `${inc.reporterName || 'Analyst'} (${inc.reporterEmail || 'operator@veil.sec'})`;
         document.getElementById('modal-timestamp').textContent = formatDate(inc.reportedAt);
         document.getElementById('modal-suggested-response').textContent = inc.severityInfo ? inc.severityInfo.suggestedResponse : 'Standard protocol';
@@ -564,6 +568,38 @@ async function inspectIncident(id) {
             } else {
                 transitionActions.style.display = 'none';
             }
+        }
+
+        // Dynamically style transition buttons to indicate current state vs targets
+        const btnOpen = document.getElementById('btn-status-open');
+        const btnProgress = document.getElementById('btn-status-inprogress');
+        const btnResolved = document.getElementById('btn-status-resolved');
+
+        [btnOpen, btnProgress, btnResolved].forEach(btn => {
+            if (!btn) return;
+            btn.className = 'btn-secondary';
+            btn.style.cssText = 'padding: 6px 12px; font-size: 0.8rem;';
+        });
+
+        if (inc.status === 'Open' && btnOpen) {
+            btnOpen.style.cssText = 'padding: 6px 12px; font-size: 0.8rem; background: #FFF4E5; color: #B25E00; border-color: #B25E00; font-weight: 700;';
+            btnOpen.innerHTML = '● Open (Current)';
+        } else if (btnOpen) {
+            btnOpen.innerHTML = 'Open';
+        }
+
+        if (inc.status === 'In Progress' && btnProgress) {
+            btnProgress.style.cssText = 'padding: 6px 12px; font-size: 0.8rem; background: #E8F4FD; color: #0E6299; border-color: #0E6299; font-weight: 700;';
+            btnProgress.innerHTML = '● In Progress (Current)';
+        } else if (btnProgress) {
+            btnProgress.innerHTML = 'In Progress';
+        }
+
+        if (inc.status === 'Resolved' && btnResolved) {
+            btnResolved.style.cssText = 'padding: 6px 12px; font-size: 0.8rem; background: var(--success-soft); color: var(--success); border-color: var(--success); font-weight: 700;';
+            btnResolved.innerHTML = '✓ Resolved (Current)';
+        } else if (btnResolved) {
+            btnResolved.innerHTML = 'Resolved';
         }
 
         // Ensure we open in clean view mode
@@ -732,7 +768,7 @@ async function saveIncidentEdit(e) {
 async function updateModalStatus(status) {
     if (!AppState.activeIncidentId) return;
     await quickUpdateStatus(AppState.activeIncidentId, status);
-    closeModal('incident-modal');
+    await inspectIncident(AppState.activeIncidentId);
     loadDashboard();
     loadIncidents();
 }
