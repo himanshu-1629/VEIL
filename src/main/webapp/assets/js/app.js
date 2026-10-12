@@ -336,11 +336,15 @@ async function loadIncidents() {
                     </span>
                 </td>
                 <td>
+                    ${(AppState.currentUser?.role === 'ADMIN' || AppState.currentUser?.userId === i.userId) ? `
                     <select class="select-filter" style="padding: 4px 8px; font-size: 0.78rem;" onchange="quickUpdateStatus(${i.incidentId}, this.value)">
                         <option value="Open" ${i.status === 'Open' ? 'selected' : ''}>Open</option>
                         <option value="In Progress" ${i.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
                         <option value="Resolved" ${i.status === 'Resolved' ? 'selected' : ''}>Resolved</option>
-                    </select>
+                    </select>` : `
+                    <span class="status-badge ${getStatusBadgeClass(i.status)}">
+                        ${escapeHtml(i.status)}
+                    </span>`}
                 </td>
                 <td class="mono" style="font-size: 0.76rem; color: var(--muted);">${formatDate(i.reportedAt)}</td>
                 <td>
@@ -549,6 +553,16 @@ async function inspectIncident(id) {
                 delBtn.onclick = () => deleteIncident(inc.incidentId);
             } else {
                 delBtn.style.display = 'none';
+            }
+        }
+
+        // Transition actions permission check (only Admin or reporter may change status)
+        const transitionActions = document.getElementById('modal-transition-actions');
+        if (transitionActions) {
+            if (AppState.currentUser?.role === 'ADMIN' || AppState.currentUser?.userId === inc.userId) {
+                transitionActions.style.display = 'flex';
+            } else {
+                transitionActions.style.display = 'none';
             }
         }
 
@@ -959,6 +973,13 @@ function getSeverityBadgeClass(score) {
     if (score >= 7) return 'badge-high';
     if (score >= 4) return 'badge-medium';
     return 'badge-low';
+}
+
+function getStatusBadgeClass(status) {
+    if (status === 'Open') return 'status-open';
+    if (status === 'In Progress') return 'status-in-progress';
+    if (status === 'Resolved') return 'status-resolved';
+    return '';
 }
 
 function formatDate(timestamp) {

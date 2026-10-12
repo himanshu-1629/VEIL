@@ -92,6 +92,17 @@ public class IncidentService {
         if (status == null || (!status.equals("Open") && !status.equals("In Progress") && !status.equals("Resolved"))) {
             throw new IllegalArgumentException("Invalid status: must be Open, In Progress, or Resolved.");
         }
+
+        Optional<Incident> existing = incidentDao.findById(incidentId);
+        if (!existing.isPresent()) {
+            throw new IllegalArgumentException("Incident not found: " + incidentId);
+        }
+
+        // Authorization check: Only Admin or the original reporter can change status
+        if (!currentUser.isAdmin() && !currentUser.getUserId().equals(existing.get().getUserId())) {
+            throw new SecurityException("You do not have permission to modify the status of this incident record.");
+        }
+
         return incidentDao.updateStatus(incidentId, status);
     }
 

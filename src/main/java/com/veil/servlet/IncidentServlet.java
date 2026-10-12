@@ -182,6 +182,8 @@ public class IncidentServlet extends HttpServlet {
             } else {
                 JsonUtil.sendError(resp, HttpServletResponse.SC_NOT_FOUND, "Incident #" + id + " not found");
             }
+        } catch (SecurityException e) {
+            JsonUtil.sendError(resp, HttpServletResponse.SC_FORBIDDEN, e.getMessage());
         } catch (Exception e) {
             JsonUtil.sendError(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         }
