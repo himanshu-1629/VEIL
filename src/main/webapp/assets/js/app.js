@@ -162,19 +162,24 @@ function renderFeaturedIncident(inc) {
     const sevClass = inc.severity >= 9 ? 'badge-critical' : inc.severity >= 7 ? 'badge-high' : 'badge-medium';
 
     container.innerHTML = `
-        <div class="featured-incident-panel">
+        <div class="featured-threat-box">
             <div>
-                <div class="featured-tag">
-                    <span class="status-indicator" style="background: var(--danger); box-shadow: 0 0 0 2px var(--danger-soft);"></span>
-                    HIGHEST UNRESOLVED PRIORITY THREAT
+                <div class="featured-header-row">
+                    <span class="featured-pill">
+                        <span class="status-indicator" style="background: var(--danger); box-shadow: 0 0 0 2px var(--danger-soft);"></span>
+                        HIGHEST UNRESOLVED THREAT
+                    </span>
+                    <span class="badge ${sevClass}">${inc.severity} &bull; ${inc.severityInfo ? inc.severityInfo.classification : 'RATING'}</span>
+                    <span class="status-badge status-${inc.status.toLowerCase().replace(/\s+/g, '-')}">${inc.status}</span>
                 </div>
                 <h2 class="featured-title">${escapeHtml(inc.threat)}</h2>
                 <p class="featured-desc">${escapeHtml(inc.description)}</p>
                 <div class="featured-meta-row">
-                    <span class="badge ${sevClass}">${inc.severity} &bull; ${inc.severityInfo ? inc.severityInfo.classification : 'RATING'}</span>
-                    <span class="status-badge status-${inc.status.toLowerCase().replace(/\s+/g, '-')}">${inc.status}</span>
-                    <span class="mono" style="font-size: 0.8rem; color: var(--muted);">Asset: <strong>${escapeHtml(inc.affectedSystem)}</strong></span>
-                    <span class="mono" style="font-size: 0.8rem; color: var(--muted);">Reported: ${formatDate(inc.reportedAt)}</span>
+                    <span class="mono" style="color: var(--muted);">Asset: <strong style="color: var(--ink);">${escapeHtml(inc.affectedSystem)}</strong></span>
+                    <span class="mono" style="color: var(--muted);">&bull;</span>
+                    <span class="mono" style="color: var(--muted);">Reporter: ${escapeHtml(inc.reporterName || 'Analyst')}</span>
+                    <span class="mono" style="color: var(--muted);">&bull;</span>
+                    <span class="mono" style="color: var(--muted);">Reported: ${formatDate(inc.reportedAt)}</span>
                 </div>
             </div>
             <div>
@@ -205,10 +210,17 @@ function renderSeverityDistribution(dist, total) {
     document.getElementById('cnt-sev-medium').textContent = `${medium} (${Math.round((medium/totalCount)*100)}%)`;
     document.getElementById('cnt-sev-low').textContent = `${low} (${Math.round((low/totalCount)*100)}%)`;
 
-    document.getElementById('bar-sev-critical').style.width = `${(critical/totalCount)*100}%`;
-    document.getElementById('bar-sev-high').style.width = `${(high/totalCount)*100}%`;
-    document.getElementById('bar-sev-medium').style.width = `${(medium/totalCount)*100}%`;
-    document.getElementById('bar-sev-low').style.width = `${(low/totalCount)*100}%`;
+    setBarTransform('bar-sev-critical', critical / totalCount);
+    setBarTransform('bar-sev-high', high / totalCount);
+    setBarTransform('bar-sev-medium', medium / totalCount);
+    setBarTransform('bar-sev-low', low / totalCount);
+}
+
+function setBarTransform(id, ratio) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.style.width = '100%';
+    el.style.transform = `scaleX(${Math.max(0, Math.min(1, ratio))})`;
 }
 
 function renderRecentIncidents(list) {
@@ -227,7 +239,7 @@ function renderRecentIncidents(list) {
                 <div style="font-size: 0.88rem; font-weight: 600; color: var(--ink); margin-bottom: 2px;">
                     ${escapeHtml(item.threat)}
                 </div>
-                <div class="mono" style="font-size: 0.72rem; color: var(--muted);">
+                <div class="mono" style="font-size: 0.78rem; color: var(--muted);">
                     ${escapeHtml(item.affectedSystem)} &bull; ${formatDate(item.reportedAt)}
                 </div>
             </div>

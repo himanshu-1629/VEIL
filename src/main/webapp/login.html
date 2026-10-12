@@ -29,7 +29,7 @@
             justify-content: space-between;
             position: relative;
             background-color: var(--sand);
-            border-right: 1px solid var(--border-strong);
+            border-right: 1px solid var(--border);
             overflow: hidden;
         }
 
@@ -44,40 +44,38 @@
             align-items: center;
             gap: var(--space-2);
             font-family: var(--font-mono);
-            font-size: 0.72rem;
+            font-size: 0.78rem;
             color: var(--cyprus);
             background: var(--cyprus-soft);
-            padding: 4px 12px;
+            padding: 5px 12px;
             border-radius: var(--radius-small);
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
+            letter-spacing: 0.04em;
             width: fit-content;
         }
 
         .wordmark-huge {
             font-family: var(--font-tech);
-            font-size: 4.8rem;
+            font-size: 4.6rem;
             font-weight: 800;
             color: var(--cyprus);
-            letter-spacing: 0.16em;
+            letter-spacing: 0.08em;
             line-height: 0.95;
             margin: var(--space-3) 0 var(--space-2);
         }
 
         .expansion-row {
             font-family: var(--font-mono);
-            font-size: 0.78rem;
-            letter-spacing: 0.14em;
+            font-size: 0.82rem;
+            letter-spacing: 0.04em;
             color: var(--muted-strong);
-            text-transform: uppercase;
-            margin-bottom: var(--space-8);
+            margin-bottom: var(--space-6);
         }
 
-        /* Abstract Geometric Security Motifs */
+        /* Purposeful Geometric Security Motif */
         .security-graphic-container {
             position: relative;
             width: 100%;
-            height: 280px;
+            height: 260px;
             margin: var(--space-6) 0;
             display: flex;
             align-items: center;
@@ -86,23 +84,23 @@
 
         .security-svg-motif {
             width: 100%;
-            max-width: 480px;
+            max-width: 440px;
             height: 100%;
         }
 
         .story-text-container {
-            max-width: 620px;
+            max-width: 580px;
         }
 
         .story-headline {
-            font-size: 2.8rem;
+            font-size: 2.7rem;
             color: var(--cyprus-deep);
-            line-height: 1.08;
+            line-height: 1.1;
             margin-bottom: var(--space-4);
         }
 
         .story-statement {
-            font-size: 1.15rem;
+            font-size: 1.12rem;
             color: var(--muted-strong);
             line-height: 1.5;
             margin-bottom: var(--space-3);
@@ -110,9 +108,9 @@
 
         .story-secondary {
             font-family: var(--font-tech);
-            font-size: 0.9rem;
+            font-size: 0.92rem;
             color: var(--cyprus);
-            letter-spacing: 0.1em;
+            letter-spacing: 0.04em;
             text-transform: uppercase;
             font-weight: 700;
         }
@@ -121,9 +119,9 @@
             display: flex;
             justify-content: space-between;
             font-family: var(--font-mono);
-            font-size: 0.68rem;
+            font-size: 0.76rem;
             color: var(--muted);
-            letter-spacing: 0.1em;
+            letter-spacing: 0.02em;
             border-top: 1px solid var(--border);
             padding-top: var(--space-4);
             margin-top: var(--space-6);
@@ -141,10 +139,10 @@
 
         .auth-box-card {
             width: 100%;
-            max-width: 450px;
+            max-width: 440px;
             padding: var(--space-12) var(--space-8);
             background: var(--surface-white);
-            border: 1px solid var(--border-strong);
+            border: 1px solid var(--border);
             border-radius: var(--radius-large);
             box-shadow: var(--shadow-raised);
             position: relative;
@@ -159,12 +157,12 @@
 
         .auth-title {
             font-size: 1.85rem;
-            color: var(--cyprus);
+            color: var(--cyprus-deep);
             margin-bottom: var(--space-1);
         }
 
         .auth-subtitle {
-            font-size: 0.88rem;
+            font-size: 0.9rem;
             color: var(--muted-strong);
         }
 
@@ -195,15 +193,15 @@
             display: none;
             padding: 12px 16px;
             background: var(--danger-soft);
-            border: 1px solid var(--danger);
+            border: 1px solid rgba(184, 59, 52, 0.3);
             border-radius: var(--radius-small);
             color: var(--danger);
-            font-size: 0.85rem;
+            font-size: 0.86rem;
             font-weight: 500;
             margin-bottom: var(--space-6);
         }
 
-        /* Demo credentials quick selector */
+        /* Demo accounts panel */
         .demo-accounts-panel {
             margin-top: var(--space-8);
             padding-top: var(--space-6);
@@ -211,11 +209,11 @@
         }
 
         .demo-heading {
-            font-size: 0.72rem;
+            font-size: 0.78rem;
             text-transform: uppercase;
             font-family: var(--font-mono);
             color: var(--muted);
-            letter-spacing: 0.1em;
+            letter-spacing: 0.04em;
             margin-bottom: var(--space-3);
         }
 
@@ -229,13 +227,13 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 12px;
+            padding: 9px 13px;
             background: var(--surface-raised);
             border: 1px solid var(--border);
             border-radius: var(--radius-small);
-            font-size: 0.78rem;
+            font-size: 0.82rem;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: border-color 0.15s ease, background 0.15s ease;
         }
 
         .demo-chip:hover {
@@ -245,7 +243,7 @@
 
         .demo-role-tag {
             font-family: var(--font-mono);
-            font-size: 0.68rem;
+            font-size: 0.75rem;
             font-weight: 700;
             color: var(--cyprus);
         }
@@ -284,30 +282,27 @@
             <div class="brand-header-meta">
                 <span class="system-code-pill">
                     <span class="status-indicator"></span>
-                    CYBERSECURITY MANAGEMENT SYSTEM / 001
+                    Cybersecurity Management System
                 </span>
                 <h1 class="wordmark-huge">VEIL</h1>
-                <div class="expansion-row">VISUALIZE. EVALUATE. INVESTIGATE. LOCK.</div>
+                <div class="expansion-row">Visualize &bull; Evaluate &bull; Investigate &bull; Lock</div>
             </div>
 
-            <!-- Custom Geometric SVG Security Motif -->
+            <!-- Geometric SVG Security Motif -->
             <div class="security-graphic-container" aria-hidden="true">
                 <svg class="security-svg-motif" viewBox="0 0 500 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Coordinate grid background -->
-                    <line x1="20" y1="120" x2="480" y2="120" stroke="#AFC9BE" stroke-width="1" stroke-dasharray="4 4" />
-                    <line x1="250" y1="20" x2="250" y2="220" stroke="#AFC9BE" stroke-width="1" stroke-dasharray="4 4" />
-                    <circle cx="250" cy="120" r="90" stroke="#004741" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.35" />
-                    <circle cx="250" cy="120" r="60" stroke="#004741" stroke-width="1.5" opacity="0.6" />
+                    <circle cx="250" cy="120" r="90" stroke="#004741" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.25" />
+                    <circle cx="250" cy="120" r="60" stroke="#004741" stroke-width="1.5" opacity="0.5" />
                     
-                    <!-- Tactile Geometric Shield -->
+                    <!-- Tactile Shield -->
                     <path d="M250 50 L310 80 V135 C310 170 250 195 250 195 C250 195 190 170 190 135 V80 L250 50 Z" 
                           fill="#FAF8F3" stroke="#004741" stroke-width="2.5" />
                     
-                    <!-- Inner Signal Core -->
+                    <!-- Inner Core -->
                     <circle cx="250" cy="120" r="14" fill="#004741" />
                     <circle cx="250" cy="120" r="6" fill="#F0EDE6" />
 
-                    <!-- Satellite Nodes & Telemetry Rings -->
+                    <!-- Satellite Nodes -->
                     <circle cx="140" cy="70" r="4" fill="#004741" />
                     <circle cx="140" cy="70" r="10" stroke="#286747" stroke-width="1" opacity="0.5" />
                     <line x1="140" y1="70" x2="190" y2="100" stroke="#AFC9BE" stroke-width="1" />
@@ -315,11 +310,6 @@
                     <circle cx="360" cy="165" r="4" fill="#B83B34" />
                     <circle cx="360" cy="165" r="10" stroke="#B83B34" stroke-width="1" opacity="0.5" />
                     <line x1="310" y1="145" x2="360" y2="165" stroke="#AFC9BE" stroke-width="1" />
-
-                    <!-- Precision Technical Annotations -->
-                    <text x="30" y="30" fill="#004741" font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="2">SYS.NODE // 11g-ORCL-PERSIST</text>
-                    <text x="30" y="44" fill="#68716B" font-family="JetBrains Mono, monospace" font-size="9">CIPHER: BCRYPT-10-SALT</text>
-                    <text x="350" y="30" fill="#004741" font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="2">SEC_LEVEL: 10-MAX</text>
                 </svg>
             </div>
 
@@ -332,14 +322,14 @@
             </div>
 
             <div class="canvas-footer-meta">
-                <span>PAT 4 WEB APPLICATION DEVELOPMENT</span>
-                <span>BACKEND: JAVA SERVLETS &bull; JDBC &bull; ORACLE DATABASE</span>
+                
+                <span>Java Servlets &bull; JDBC &bull; Oracle Database</span>
             </div>
         </section>
 
         <!-- Right Section: Authentication Form -->
         <main class="auth-form-canvas" aria-label="Login Form">
-            <div class="auth-box-card tactile-surface">
+            <div class="auth-box-card">
                 
                 <div class="auth-heading-block">
                     <h2 class="auth-title">Sign In</h2>
@@ -373,7 +363,7 @@
                     </button>
                 </form>
 
-                <!-- Valid Demonstration Accounts -->
+                <!-- Academic Evaluation Accounts -->
                 <div class="demo-accounts-panel">
                     <div class="demo-heading">Academic Evaluation Accounts</div>
                     <div class="demo-chip-row">

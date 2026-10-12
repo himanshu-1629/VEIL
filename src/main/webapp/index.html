@@ -16,7 +16,7 @@
                 <div class="brand-symbol">V</div>
                 <div class="brand-text-block">
                     <span class="brand-name">VEIL</span>
-                    <span class="brand-subline">CYBERSECURITY MANAGEMENT SYSTEM</span>
+                    <span class="brand-subline">Cybersecurity Management System</span>
                 </div>
             </div>
 
@@ -66,7 +66,7 @@
                 <div class="user-badge-pill" id="user-display-pill">
                     <span class="status-indicator" title="Connected"></span>
                     <span id="current-user-name">Loading...</span>
-                    <span class="mono" id="current-user-role" style="font-size: 0.7rem; color: var(--cyprus); font-weight: 700;">USER</span>
+                    <span class="mono" id="current-user-role" style="font-size: 0.76rem; color: var(--cyprus); font-weight: 700;">USER</span>
                 </div>
                 <button type="button" id="btn-logout" class="btn-logout" title="Safely terminate session">
                     Logout
@@ -84,75 +84,74 @@
         <section id="view-dashboard" class="view-section active" aria-labelledby="heading-dashboard">
             <div class="page-header-editorial">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
-                    <span class="page-meta-badge">
-                        OPERATIONAL OVERVIEW // REAL-TIME METRICS
-                    </span>
-                    <span class="mono" id="db-engine-pill" style="font-size: 0.72rem; padding: 4px 10px; background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-pill); color: var(--muted-strong);">
+                    <div>
+                        <h1 id="heading-dashboard" class="page-title">Security, in focus.</h1>
+                        <p class="page-lead">Every incident tells a story. Make sure the next action is clear.</p>
+                    </div>
+                    <span class="mono" id="db-engine-pill" style="font-size: 0.76rem; padding: 5px 12px; background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-pill); color: var(--muted-strong);">
                         DB: Oracle JDBC
                     </span>
                 </div>
-                <h1 id="heading-dashboard" class="page-title">Security, in focus.</h1>
-                <p class="page-lead">Every incident tells a story. Make sure the next action is clear.</p>
             </div>
 
-            <!-- Live Metric Cards -->
-            <div class="metrics-grid">
-                <div class="paper-card metric-card accent-cyprus">
+            <!-- Refined Operational Metrics Strip (No Left Border AI Cards) -->
+            <div class="metrics-strip">
+                <div class="metric-strip-item">
                     <div class="metric-label-row">
                         <span class="metric-label">Total Signals</span>
-                        <span class="mono" style="font-size: 0.7rem; color: var(--muted);">LOGGED</span>
+                        <span class="metric-badge-tag">DATABASE</span>
                     </div>
                     <div class="metric-value" id="metric-total">0</div>
-                    <div class="metric-subtext">All historical records in database</div>
+                    <div class="metric-subtext">All records persisted in Oracle</div>
                 </div>
 
-                <div class="paper-card metric-card accent-warning">
+                <div class="metric-strip-item accent-open">
                     <div class="metric-label-row">
                         <span class="metric-label">Open Incidents</span>
-                        <span class="mono" style="font-size: 0.7rem; color: var(--warning);">ACTIONABLE</span>
+                        <span class="metric-badge-tag">ACTIONABLE</span>
                     </div>
-                    <div class="metric-value" id="metric-open" style="color: var(--warning);">0</div>
+                    <div class="metric-value color-warning" id="metric-open">0</div>
                     <div class="metric-subtext">Pending triage and containment</div>
                 </div>
 
-                <div class="paper-card metric-card accent-danger">
+                <div class="metric-strip-item accent-critical">
                     <div class="metric-label-row">
                         <span class="metric-label">Critical (9–10)</span>
-                        <span class="mono" style="font-size: 0.7rem; color: var(--danger);">URGENT</span>
+                        <span class="metric-badge-tag">URGENT</span>
                     </div>
-                    <div class="metric-value" id="metric-critical" style="color: var(--danger);">0</div>
-                    <div class="metric-subtext">Immediate attention mandated</div>
+                    <div class="metric-value color-danger" id="metric-critical">0</div>
+                    <div class="metric-subtext">Immediate containment mandated</div>
                 </div>
 
-                <div class="paper-card metric-card accent-info">
+                <div class="metric-strip-item">
                     <div class="metric-label-row">
                         <span class="metric-label">In Progress</span>
-                        <span class="mono" style="font-size: 0.7rem; color: var(--info);">ACTIVE</span>
+                        <span class="metric-badge-tag">ACTIVE</span>
                     </div>
-                    <div class="metric-value" id="metric-in-progress" style="color: var(--info);">0</div>
+                    <div class="metric-value color-info" id="metric-in-progress">0</div>
                     <div class="metric-subtext">Under active investigation</div>
                 </div>
 
-                <div class="paper-card metric-card accent-success">
+                <div class="metric-strip-item">
                     <div class="metric-label-row">
                         <span class="metric-label">Resolved</span>
-                        <span class="mono" style="font-size: 0.7rem; color: var(--success);">SECURED</span>
+                        <span class="metric-badge-tag">SECURED</span>
                     </div>
-                    <div class="metric-value" id="metric-resolved" style="color: var(--success);">0</div>
+                    <div class="metric-value color-success" id="metric-resolved">0</div>
                     <div class="metric-subtext">Verified closed & patched</div>
                 </div>
             </div>
 
-            <!-- Featured Incident Banner -->
+            <!-- Featured Threat Tactical Brief -->
             <div id="featured-incident-container"></div>
 
             <!-- Telemetry Columns -->
             <div class="dashboard-columns">
-                <!-- Severity & Status Distribution -->
+                <!-- Severity Distribution -->
                 <div class="paper-card telemetry-card">
                     <div class="telemetry-card-title">
                         <span>Threat Severity Distribution</span>
-                        <span class="mono" style="font-size: 0.72rem; color: var(--muted);">EVALUATION MATRIX</span>
+                        <span class="mono" style="font-size: 0.78rem; color: var(--muted);">Evaluation Matrix</span>
                     </div>
 
                     <div id="severity-bars-container">
@@ -197,15 +196,15 @@
                         </div>
                     </div>
 
-                    <!-- Operational Posture Box -->
-                    <div class="posture-box" style="margin-top: var(--space-6);">
+                    <!-- Operational Posture Banner -->
+                    <div class="posture-box">
                         <div class="posture-icon">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                             </svg>
                         </div>
                         <div>
-                            <div class="mono" style="font-size: 0.72rem; text-transform: uppercase; color: var(--cyprus); font-weight: 700;">Operational Posture</div>
+                            <div class="mono" style="font-size: 0.76rem; color: var(--cyprus); font-weight: 700; letter-spacing: 0.04em;">Operational Posture</div>
                             <div class="posture-text" id="operational-posture-narrative">Analyzing security posture...</div>
                         </div>
                     </div>
@@ -215,10 +214,10 @@
                 <div class="paper-card telemetry-card">
                     <div class="telemetry-card-title">
                         <span>Recent Activity</span>
-                        <span class="mono" style="font-size: 0.72rem; color: var(--muted);">TIMELINE</span>
+                        <span class="mono" style="font-size: 0.78rem; color: var(--muted);">Timeline</span>
                     </div>
                     <div id="recent-incidents-feed" style="display: flex; flex-direction: column; gap: var(--space-3);">
-                        <p style="font-size: 0.85rem; color: var(--muted);">Loading telemetry stream...</p>
+                        <p style="font-size: 0.88rem; color: var(--muted);">Loading telemetry stream...</p>
                     </div>
                 </div>
             </div>
@@ -229,14 +228,11 @@
              ================================================================== -->
         <section id="view-register" class="view-section" aria-labelledby="heading-register">
             <div class="page-header-editorial">
-                <span class="page-meta-badge">
-                    SEC-OPS // LOG: 0042
-                </span>
                 <h1 id="heading-register" class="page-title">The incident register.</h1>
                 <p class="page-lead">Every signal, documented. Every response, accountable.</p>
             </div>
 
-            <!-- Register Search & Filters -->
+            <!-- Controls Bar -->
             <div class="register-controls-bar">
                 <div class="search-input-group">
                     <svg class="search-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -303,9 +299,6 @@
              ================================================================== -->
         <section id="view-report" class="view-section" aria-labelledby="heading-report">
             <div class="page-header-editorial">
-                <span class="page-meta-badge">
-                    INGESTION // FORM-INPUT
-                </span>
                 <h1 id="heading-report" class="page-title">Capture the signal.</h1>
                 <p class="page-lead">Record what happened. Establish its severity. Start the response.</p>
             </div>
@@ -356,9 +349,9 @@
                             <label class="form-label">Severity Score (1 to 10)</label>
                             <div class="severity-slider-container">
                                 <div class="severity-slider-row">
-                                    <span class="mono" style="font-size: 0.8rem; font-weight: 700; color: var(--success);">1 (MIN)</span>
+                                    <span class="mono" style="font-size: 0.82rem; font-weight: 700; color: var(--success);">1 (Low)</span>
                                     <input type="range" id="report-severity" min="1" max="10" value="5" class="severity-slider">
-                                    <span class="mono" style="font-size: 0.8rem; font-weight: 700; color: var(--danger);">10 (CRITICAL)</span>
+                                    <span class="mono" style="font-size: 0.82rem; font-weight: 700; color: var(--danger);">10 (Critical)</span>
                                     <div class="severity-number-display" id="severity-val-display">5</div>
                                 </div>
                             </div>
@@ -380,30 +373,30 @@
 
                 <!-- Right Side: Real-Time Severity Evaluation Matrix Guide -->
                 <div class="paper-card" style="padding: var(--space-6); height: fit-content;">
-                    <h3 style="font-size: 1.15rem; color: var(--cyprus); margin-bottom: var(--space-3); border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+                    <h2 style="font-size: 1.15rem; color: var(--cyprus-deep); margin-bottom: var(--space-3); border-bottom: 1px solid var(--border); padding-bottom: 8px;">
                         Authoritative Evaluation
-                    </h3>
-                    <p style="font-size: 0.84rem; color: var(--muted); margin-bottom: var(--space-4);">
+                    </h2>
+                    <p style="font-size: 0.86rem; color: var(--muted); margin-bottom: var(--space-4);">
                         VEIL enforces a rule-based severity matrix to standardize threat response across operations.
                     </p>
 
-                    <!-- Dynamic Live Preview Card -->
-                    <div id="live-severity-preview-card" class="tactile-surface" style="padding: var(--space-4); margin-bottom: var(--space-6);">
+                    <!-- Dynamic Live Preview Box (Un-nested semantic section) -->
+                    <div id="live-severity-preview-card" style="padding: var(--space-4); margin-bottom: var(--space-6); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-small);">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                            <span class="mono" style="font-size: 0.72rem; text-transform: uppercase; color: var(--muted);">Selected Rating</span>
+                            <span class="mono" style="font-size: 0.76rem; color: var(--muted);">Selected Rating</span>
                             <span class="badge" id="preview-badge">MEDIUM</span>
                         </div>
                         <div style="font-size: 1.1rem; font-weight: 700; color: var(--ink); margin-bottom: 4px;" id="preview-classification">
                             Medium Severity
                         </div>
-                        <div style="font-size: 0.85rem; color: var(--muted-strong);" id="preview-response">
+                        <div style="font-size: 0.86rem; color: var(--muted-strong);" id="preview-response">
                             Investigate and assess impact
                         </div>
                     </div>
 
                     <!-- Severity Reference Table -->
-                    <div style="font-size: 0.78rem;">
-                        <div class="mono" style="font-weight: 700; text-transform: uppercase; color: var(--muted); margin-bottom: 8px;">Response Matrix Reference</div>
+                    <div style="font-size: 0.8rem;">
+                        <div class="mono" style="font-weight: 700; color: var(--muted); margin-bottom: 8px; font-size: 0.78rem; letter-spacing: 0.04em;">Response Matrix Reference</div>
                         <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px;">
                             <li style="padding: 6px 10px; background: var(--success-soft); border-radius: 4px; color: var(--success);">
                                 <strong>1–3 (Low):</strong> Record and monitor
@@ -430,9 +423,6 @@
             <div class="page-header-editorial">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
                     <div>
-                        <span class="page-meta-badge">
-                            ACCESS CONTROL // RBAC
-                        </span>
                         <h1 id="heading-users" class="page-title">Personnel & Access Control</h1>
                         <p class="page-lead">Authorized operators with access to the VEIL security workspace.</p>
                     </div>
@@ -481,7 +471,7 @@
             <div class="modal-header">
                 <div>
                     <span class="incident-id-badge" id="modal-incident-id">INC-5001</span>
-                    <h2 id="modal-incident-title" style="font-size: 1.45rem; color: var(--cyprus); margin-top: 6px;">Threat Title</h2>
+                    <h2 id="modal-incident-title" style="font-size: 1.45rem; color: var(--cyprus-deep); margin-top: 6px;">Threat Title</h2>
                 </div>
                 <button type="button" class="modal-close-btn" onclick="closeModal('incident-modal')" aria-label="Close dialog">&times;</button>
             </div>
@@ -517,7 +507,7 @@
 
             <div style="margin-bottom: var(--space-6);">
                 <div class="meta-field-label">Actionable Playbook Guidance</div>
-                <div style="padding: 12px 16px; background: var(--sand); border-radius: var(--radius-small); border-left: 4px solid var(--cyprus); font-size: 0.9rem; font-weight: 600; color: var(--cyprus-deep);" id="modal-suggested-response">
+                <div class="guidance-banner" id="modal-suggested-response">
                     Immediate attention mandated
                 </div>
             </div>
@@ -530,12 +520,12 @@
             <!-- Transition Actions -->
             <div style="border-top: 1px solid var(--border); padding-top: var(--space-4); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
                 <div style="display: flex; gap: var(--space-2); align-items: center;">
-                    <span class="mono" style="font-size: 0.72rem; text-transform: uppercase; color: var(--muted); font-weight: 700;">Transition:</span>
-                    <button type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 0.78rem;" onclick="updateModalStatus('Open')">Open</button>
-                    <button type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 0.78rem;" onclick="updateModalStatus('In Progress')">In Progress</button>
-                    <button type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 0.78rem; background: var(--success-soft); color: var(--success); border-color: var(--success);" onclick="updateModalStatus('Resolved')">Resolved</button>
+                    <span class="mono" style="font-size: 0.76rem; color: var(--muted); font-weight: 700; letter-spacing: 0.04em;">Transition:</span>
+                    <button type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="updateModalStatus('Open')">Open</button>
+                    <button type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="updateModalStatus('In Progress')">In Progress</button>
+                    <button type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 0.8rem; background: var(--success-soft); color: var(--success); border-color: var(--success);" onclick="updateModalStatus('Resolved')">Resolved</button>
                 </div>
-                <button type="button" id="btn-modal-delete-incident" class="btn-secondary" style="padding: 6px 12px; font-size: 0.78rem; color: var(--danger); border-color: var(--danger);">
+                <button type="button" id="btn-modal-delete-incident" class="btn-secondary" style="padding: 6px 12px; font-size: 0.8rem; color: var(--danger); border-color: var(--danger);">
                     Delete Incident
                 </button>
             </div>
@@ -548,7 +538,7 @@
     <div id="user-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-user-heading">
         <div class="modal-card">
             <div class="modal-header">
-                <h2 id="modal-user-heading" style="font-size: 1.35rem; color: var(--cyprus);">Provision Security Operator</h2>
+                <h2 id="modal-user-heading" style="font-size: 1.35rem; color: var(--cyprus-deep);">Provision Security Operator</h2>
                 <button type="button" class="modal-close-btn" onclick="closeModal('user-modal')" aria-label="Close dialog">&times;</button>
             </div>
 
