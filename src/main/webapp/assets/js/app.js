@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await initAuth();
     initNavigation();
     initSeveritySlider();
+    initEditSeveritySlider();
     initReportingForm();
     initRegisterFilters();
     initUserManagement();
@@ -351,6 +352,12 @@ async function loadIncidents() {
                             </svg>
                         </button>
                         ${(AppState.currentUser?.role === 'ADMIN' || AppState.currentUser?.userId === i.userId) ? `
+                        <button type="button" class="btn-icon-action" title="Edit All Details" onclick="openEditIncident(${i.incidentId})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </button>
                         <button type="button" class="btn-icon-action btn-icon-delete" title="Delete Incident" onclick="deleteIncident(${i.incidentId})">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="3 6 5 6 21 6"></polyline>
@@ -496,7 +503,7 @@ function initReportingForm() {
     });
 }
 
-// --- INCIDENT DETAILS MODAL ---
+// --- INCIDENT DETAILS & FULL EDIT CONTROLLER ---
 async function inspectIncident(id) {
     try {
         const res = await fetch(`api/incidents/${id}`);
@@ -507,6 +514,7 @@ async function inspectIncident(id) {
         if (!inc) return;
 
         AppState.activeIncidentId = inc.incidentId;
+        AppState.activeIncident = inc;
 
         document.getElementById('modal-incident-id').textContent = `INC-${inc.incidentId}`;
         document.getElementById('modal-incident-title').textContent = inc.threat;
@@ -523,6 +531,16 @@ async function inspectIncident(id) {
         document.getElementById('modal-suggested-response').textContent = inc.severityInfo ? inc.severityInfo.suggestedResponse : 'Standard protocol';
         document.getElementById('modal-description').textContent = inc.description;
 
+        // Edit button permission check
+        const editToggleBtn = document.getElementById('btn-modal-toggle-edit');
+        if (editToggleBtn) {
+            if (AppState.currentUser?.role === 'ADMIN' || AppState.currentUser?.userId === inc.userId) {
+                editToggleBtn.style.display = 'inline-flex';
+            } else {
+                editToggleBtn.style.display = 'none';
+            }
+        }
+
         // Delete button permission check
         const delBtn = document.getElementById('btn-modal-delete-incident');
         if (delBtn) {
@@ -534,9 +552,166 @@ async function inspectIncident(id) {
             }
         }
 
+        // Ensure we open in clean view mode
+        toggleIncidentEditMode(false);
         openModal('incident-modal');
     } catch (err) {
         showToast('Error loading incident: ' + err.message, 'error');
+    }
+}
+
+function toggleIncidentEditMode(isEdit) {
+    const viewSection = document.getElementById('incident-view-mode');
+    const editForm = document.getElementById('incident-edit-form');
+    const modeBadge = document.getElementById('modal-mode-badge');
+    const toggleBtn = document.getElementById('btn-modal-toggle-edit');
+    const titleEl = document.getElementById('modal-incident-title');
+    const inc = AppState.activeIncident;
+
+    if (!viewSection || !editForm) return;
+
+    if (isEdit) {
+        if (!inc) return;
+        viewSection.style.display = 'none';
+        editForm.style.display = 'block';
+        if (modeBadge) modeBadge.style.display = 'inline-block';
+        if (toggleBtn) toggleBtn.style.display = 'none';
+        if (titleEl) titleEl.textContent = `Edit Incident #${inc.incidentId}`;
+
+        // Populate edit form controls
+        document.getElementById('edit-threat').value = inc.threat || '';
+        document.getElementById('edit-type').value = inc.incidentType || 'Unauthorized Access';
+        document.getElementById('edit-system').value = inc.affectedSystem || '';
+        document.getElementById('edit-status').value = inc.status || 'Open';
+        document.getElementById('edit-desc').value = inc.description || '';
+
+        const sevInput = document.getElementById('edit-severity');
+        if (sevInput) {
+            sevInput.value = inc.severity || 5;
+            updateEditSeverityUI(parseInt(sevInput.value, 10));
+        }
+    } else {
+        viewSection.style.display = 'block';
+        editForm.style.display = 'none';
+        if (modeBadge) modeBadge.style.display = 'none';
+        if (toggleBtn) {
+            if (AppState.currentUser?.role === 'ADMIN' || (inc && AppState.currentUser?.userId === inc.userId)) {
+                toggleBtn.style.display = 'inline-flex';
+            }
+        }
+        if (titleEl && inc) {
+            titleEl.textContent = inc.threat;
+        }
+    }
+}
+
+async function openEditIncident(id) {
+    await inspectIncident(id);
+    toggleIncidentEditMode(true);
+}
+
+function initEditSeveritySlider() {
+    const slider = document.getElementById('edit-severity');
+    if (!slider) return;
+    slider.addEventListener('input', () => {
+        updateEditSeverityUI(parseInt(slider.value, 10));
+    });
+}
+
+function updateEditSeverityUI(score) {
+    const display = document.getElementById('edit-severity-val-display');
+    const badge = document.getElementById('edit-severity-badge');
+    const response = document.getElementById('edit-severity-response');
+
+    if (display) display.textContent = score;
+
+    let classification = '';
+    let playbook = '';
+    let badgeClass = '';
+
+    if (score <= 3) {
+        classification = 'Low';
+        playbook = 'Record and monitor';
+        badgeClass = 'badge-low';
+    } else if (score <= 6) {
+        classification = 'Medium';
+        playbook = 'Investigate and assess impact';
+        badgeClass = 'badge-medium';
+    } else if (score <= 8) {
+        classification = 'High';
+        playbook = 'Prioritize investigation';
+        badgeClass = 'badge-high';
+    } else {
+        classification = 'Critical';
+        playbook = 'Immediate attention';
+        badgeClass = 'badge-critical';
+    }
+
+    if (badge) {
+        badge.className = `badge ${badgeClass}`;
+        badge.textContent = `${score} • ${classification}`;
+    }
+    if (response) {
+        response.textContent = playbook;
+    }
+}
+
+async function saveIncidentEdit(e) {
+    e.preventDefault();
+    const id = AppState.activeIncidentId;
+    if (!id) return;
+
+    const threat = document.getElementById('edit-threat').value.trim();
+    const incidentType = document.getElementById('edit-type').value;
+    const affectedSystem = document.getElementById('edit-system').value.trim();
+    const status = document.getElementById('edit-status').value;
+    const severity = parseInt(document.getElementById('edit-severity').value, 10);
+    const description = document.getElementById('edit-desc').value.trim();
+
+    if (!threat || !affectedSystem || !description) {
+        showToast('All fields are required.', 'error');
+        return;
+    }
+
+    const saveBtn = document.getElementById('btn-save-incident-edit');
+    saveBtn.disabled = true;
+    const originalContent = saveBtn.innerHTML;
+    saveBtn.innerHTML = `<span>Saving to Oracle...</span>`;
+
+    try {
+        const res = await fetch(`api/incidents/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': AppState.csrfToken
+            },
+            body: JSON.stringify({
+                threat,
+                incidentType,
+                affectedSystem,
+                status,
+                severity,
+                description
+            })
+        });
+
+        const json = await res.json();
+        if (res.ok && json.success) {
+            showToast(`Incident #${id} successfully updated in Oracle database.`, 'success');
+            // Refresh telemetry & table
+            loadIncidents();
+            loadDashboard();
+            // Refresh modal with updated data
+            await inspectIncident(id);
+            toggleIncidentEditMode(false);
+        } else {
+            showToast(json.message || 'Failed to update incident.', 'error');
+        }
+    } catch (err) {
+        showToast('Network error while saving: ' + err.message, 'error');
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalContent;
     }
 }
 
