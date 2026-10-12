@@ -82,15 +82,101 @@
              VIEW 1: SECURITY DASHBOARD
              ================================================================== -->
         <section id="view-dashboard" class="view-section active" aria-labelledby="heading-dashboard">
-            <div class="page-header-editorial">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
-                    <div>
-                        <h1 id="heading-dashboard" class="page-title">Security, in focus.</h1>
-                        <p class="page-lead">Every incident tells a story. Make sure the next action is clear.</p>
+            <!-- Interactive 3D Crystal Core Hero Section -->
+            <div class="crystal-hero-section">
+                <div class="crystal-hero-content">
+                    <div class="mono crystal-hero-kicker">Security Overview // Core Telemetry</div>
+                    <h1 id="heading-dashboard" class="crystal-hero-title">A Safer Tomorrow,<br><em>Unveiled.</em></h1>
+                    <p class="crystal-hero-lead">
+                        Monitor. Analyze. Investigate. Protect. VEIL continuously synthesizes telemetry across enterprise assets with real-time Oracle intelligence.
+                    </p>
+                    <div class="crystal-hero-actions">
+                        <button type="button" class="btn-primary-cyprus" onclick="switchView('register')">
+                            <span>View Live Threats</span>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="switchView('report')">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            <span>Report Signal</span>
+                        </button>
                     </div>
-                    <span class="mono" id="db-engine-pill" style="font-size: 0.76rem; padding: 5px 12px; background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-pill); color: var(--muted-strong);">
-                        DB: Oracle JDBC
-                    </span>
+                    <div class="crystal-hero-meta-row">
+                        <span class="crystal-meta-item">
+                            <span class="status-indicator"></span>
+                            <span id="db-engine-pill">Oracle AI Database 26ai: Active</span>
+                        </span>
+                        <span class="crystal-meta-item mono">
+                            <span>Core Shield: Locked</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 3D Canvas Stage & Floating Capability Orbit Badges (VEIL) -->
+                <div class="crystal-stage-container" id="crystal-stage-wrapper">
+                    <div id="crystal-canvas-container" class="crystal-canvas-viewport"></div>
+
+                    <!-- Floating Capability Badges (VEIL) -->
+                    <div class="orbit-card orbit-card-top-left" onclick="highlightModule('telemetry')" title="Click to view real-time activity">
+                        <div class="orbit-card-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </div>
+                        <div class="orbit-card-text">
+                            <div class="orbit-card-title">Visualize</div>
+                            <div class="orbit-card-sub">Real-time activity</div>
+                        </div>
+                    </div>
+
+                    <div class="orbit-card orbit-card-top-right" onclick="highlightModule('severity')" title="Click to evaluate risk & impact">
+                        <div class="orbit-card-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            </svg>
+                        </div>
+                        <div class="orbit-card-text">
+                            <div class="orbit-card-title">Evaluate</div>
+                            <div class="orbit-card-sub">Risk & impact</div>
+                        </div>
+                    </div>
+
+                    <div class="orbit-card orbit-card-bottom-left" onclick="switchView('register')" title="Click to trace & analyze incidents">
+                        <div class="orbit-card-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </div>
+                        <div class="orbit-card-text">
+                            <div class="orbit-card-title">Investigate</div>
+                            <div class="orbit-card-sub">Trace & analyze</div>
+                        </div>
+                    </div>
+
+                    <div class="orbit-card orbit-card-bottom-right" onclick="switchView('report')" title="Click to file containment action">
+                        <div class="orbit-card-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                        </div>
+                        <div class="orbit-card-text">
+                            <div class="orbit-card-title">Lock</div>
+                            <div class="orbit-card-sub">Contain & prevent</div>
+                        </div>
+                    </div>
+
+                    <!-- Tooltip for hovered 3D nodes -->
+                    <div id="crystal-3d-tooltip" class="crystal-node-tooltip" style="display: none;"></div>
                 </div>
             </div>
 
@@ -685,6 +771,9 @@
     <!-- Toast Notifications Container -->
     <div id="toast-container" aria-live="polite"></div>
 
+    <!-- 3D Engine & Interactive Crystal Core Component -->
+    <script src="assets/js/three.min.js"></script>
+    <script src="assets/js/crystal-core.js"></script>
     <!-- Frontend Application Logic -->
     <script src="assets/js/app.js"></script>
 </body>
