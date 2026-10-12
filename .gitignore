@@ -1,0 +1,23 @@
+# Maven & Build artifacts
+target/
+*.war
+*.jar
+*.class
+
+# IDE & Editor files
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+.DS_Store
+
+# Logs & Environment
+*.log
+.env
+local-config.properties
+
+# Temp
+tmp/
+temp/

@@ -1,0 +1,70 @@
+-- ============================================================================
+-- VEIL - Cybersecurity Management System
+-- PAT 4 Web Application Development | Database Script 05: Verification & Diagnostics
+-- Target: Oracle Database 11g / 12c / 19c / 21c
+-- ============================================================================
+
+SET LINESIZE 200;
+SET PAGESIZE 100;
+COLUMN USER_NAME FORMAT A25;
+COLUMN EMAIL FORMAT A28;
+COLUMN ROLE FORMAT A8;
+COLUMN THREAT FORMAT A35;
+COLUMN AFFECTED_SYSTEM FORMAT A25;
+COLUMN STATUS FORMAT A12;
+
+-- 1. Verify Table Existence and Row Counts
+SELECT 'SYSTEM_USERS' AS TABLE_NAME, COUNT(*) AS TOTAL_ROWS FROM SYSTEM_USERS
+UNION ALL
+SELECT 'SECURITY_INCIDENT', COUNT(*) FROM SECURITY_INCIDENT;
+
+-- 2. Verify Primary Keys and Unique Constraints
+SELECT CONSTRAINT_NAME, CONSTRAINT_TYPE, TABLE_NAME, STATUS
+FROM USER_CONSTRAINTS
+WHERE TABLE_NAME IN ('SYSTEM_USERS', 'SECURITY_INCIDENT')
+ORDER BY TABLE_NAME, CONSTRAINT_TYPE;
+
+-- 3. Verify Foreign Key Linkage
+SELECT 
+    c.CONSTRAINT_NAME, 
+    c.TABLE_NAME, 
+    r.TABLE_NAME AS REFERENCED_TABLE, 
+    c.STATUS
+FROM USER_CONSTRAINTS c
+JOIN USER_CONSTRAINTS r ON c.R_CONSTRAINT_NAME = r.CONSTRAINT_NAME
+WHERE c.TABLE_NAME = 'SECURITY_INCIDENT';
+
+-- 4. Verify Active Sequences
+SELECT SEQUENCE_NAME, MIN_VALUE, MAX_VALUE, INCREMENT_BY, LAST_NUMBER
+FROM USER_SEQUENCES
+WHERE SEQUENCE_NAME IN ('USER_SEQ', 'INCIDENT_SEQ');
+
+-- 5. Verify User Roster (Masked Passwords)
+SELECT 
+    USER_ID, 
+    USER_NAME, 
+    EMAIL, 
+    ROLE, 
+    ACCOUNT_STATUS, 
+    TO_CHAR(CREATED_AT, 'YYYY-MM-DD HH24:MI') AS REGISTERED
+FROM SYSTEM_USERS
+ORDER BY USER_ID;
+
+-- 6. Verify Incident Inventory with Severity Rule Checks
+SELECT 
+    i.INCIDENT_ID,
+    i.THREAT,
+    i.INCIDENT_TYPE,
+    i.SEVERITY,
+    CASE 
+        WHEN i.SEVERITY BETWEEN 1 AND 3 THEN 'Low (Record and monitor)'
+        WHEN i.SEVERITY BETWEEN 4 AND 6 THEN 'Medium (Investigate and assess)'
+        WHEN i.SEVERITY BETWEEN 7 AND 8 THEN 'High (Prioritize investigation)'
+        WHEN i.SEVERITY BETWEEN 9 AND 10 THEN 'Critical (Immediate attention)'
+    END AS SEVERITY_CLASSIFICATION,
+    i.STATUS,
+    u.USER_NAME AS REPORTER,
+    TO_CHAR(i.REPORTED_AT, 'YYYY-MM-DD HH24:MI') AS REPORTED
+FROM SECURITY_INCIDENT i
+JOIN SYSTEM_USERS u ON i.USER_ID = u.USER_ID
+ORDER BY i.SEVERITY DESC, i.INCIDENT_ID DESC;

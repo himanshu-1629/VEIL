@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEIL — Cybersecurity Management System | Authentication</title>
+    <meta name="description" content="VEIL: Visualize. Evaluate. Investigate. Lock. Cybersecurity incident operations and threat prioritization workspace.">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .login-page-body {
+            min-height: 100vh;
+            display: flex;
+            align-items: stretch;
+            background-color: var(--sand);
+        }
+
+        .login-split-wrapper {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            width: 100vw;
+            min-height: 100vh;
+        }
+
+        /* Left Editorial Canvas */
+        .brand-story-canvas {
+            padding: var(--space-12) var(--space-12) var(--space-8);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            background-color: var(--sand);
+            border-right: 1px solid var(--border-strong);
+            overflow: hidden;
+        }
+
+        .brand-header-meta {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+
+        .system-code-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--cyprus);
+            background: var(--cyprus-soft);
+            padding: 4px 12px;
+            border-radius: var(--radius-small);
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            width: fit-content;
+        }
+
+        .wordmark-huge {
+            font-family: var(--font-tech);
+            font-size: 4.8rem;
+            font-weight: 800;
+            color: var(--cyprus);
+            letter-spacing: 0.16em;
+            line-height: 0.95;
+            margin: var(--space-3) 0 var(--space-2);
+        }
+
+        .expansion-row {
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            letter-spacing: 0.14em;
+            color: var(--muted-strong);
+            text-transform: uppercase;
+            margin-bottom: var(--space-8);
+        }
+
+        /* Abstract Geometric Security Motifs */
+        .security-graphic-container {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            margin: var(--space-6) 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .security-svg-motif {
+            width: 100%;
+            max-width: 480px;
+            height: 100%;
+        }
+
+        .story-text-container {
+            max-width: 620px;
+        }
+
+        .story-headline {
+            font-size: 2.8rem;
+            color: var(--cyprus-deep);
+            line-height: 1.08;
+            margin-bottom: var(--space-4);
+        }
+
+        .story-statement {
+            font-size: 1.15rem;
+            color: var(--muted-strong);
+            line-height: 1.5;
+            margin-bottom: var(--space-3);
+        }
+
+        .story-secondary {
+            font-family: var(--font-tech);
+            font-size: 0.9rem;
+            color: var(--cyprus);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .canvas-footer-meta {
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--muted);
+            letter-spacing: 0.1em;
+            border-top: 1px solid var(--border);
+            padding-top: var(--space-4);
+            margin-top: var(--space-6);
+        }
+
+        /* Right Authentication Surface */
+        .auth-form-canvas {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-8);
+            background: var(--surface);
+            position: relative;
+        }
+
+        .auth-box-card {
+            width: 100%;
+            max-width: 450px;
+            padding: var(--space-12) var(--space-8);
+            background: var(--surface-white);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-large);
+            box-shadow: var(--shadow-raised);
+            position: relative;
+            z-index: 2;
+        }
+
+        .auth-heading-block {
+            margin-bottom: var(--space-8);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: var(--space-4);
+        }
+
+        .auth-title {
+            font-size: 1.85rem;
+            color: var(--cyprus);
+            margin-bottom: var(--space-1);
+        }
+
+        .auth-subtitle {
+            font-size: 0.88rem;
+            color: var(--muted-strong);
+        }
+
+        .password-input-wrapper {
+            position: relative;
+        }
+
+        .toggle-pw-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            font-size: 0.78rem;
+            font-family: var(--font-mono);
+            font-weight: 600;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .toggle-pw-btn:hover {
+            color: var(--cyprus);
+        }
+
+        .auth-error-alert {
+            display: none;
+            padding: 12px 16px;
+            background: var(--danger-soft);
+            border: 1px solid var(--danger);
+            border-radius: var(--radius-small);
+            color: var(--danger);
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: var(--space-6);
+        }
+
+        /* Demo credentials quick selector */
+        .demo-accounts-panel {
+            margin-top: var(--space-8);
+            padding-top: var(--space-6);
+            border-top: 1px solid var(--border);
+        }
+
+        .demo-heading {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            font-family: var(--font-mono);
+            color: var(--muted);
+            letter-spacing: 0.1em;
+            margin-bottom: var(--space-3);
+        }
+
+        .demo-chip-row {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+
+        .demo-chip {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: var(--surface-raised);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-small);
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .demo-chip:hover {
+            border-color: var(--cyprus);
+            background: var(--cyprus-soft);
+        }
+
+        .demo-role-tag {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--cyprus);
+        }
+
+        @media (max-width: 900px) {
+            .login-split-wrapper {
+                grid-template-columns: 1fr;
+            }
+            .brand-story-canvas {
+                padding: var(--space-6);
+            }
+            .wordmark-huge {
+                font-size: 3.2rem;
+            }
+            .story-headline {
+                font-size: 2rem;
+            }
+            .security-graphic-container {
+                height: 180px;
+            }
+            .auth-form-canvas {
+                padding: var(--space-4);
+            }
+            .auth-box-card {
+                padding: var(--space-6);
+            }
+        }
+    </style>
+</head>
+<body class="login-page-body">
+
+    <div class="login-split-wrapper">
+        
+        <!-- Left Section: Editorial Brand Storytelling -->
+        <section class="brand-story-canvas" aria-label="VEIL Brand Identity">
+            <div class="brand-header-meta">
+                <span class="system-code-pill">
+                    <span class="status-indicator"></span>
+                    CYBERSECURITY MANAGEMENT SYSTEM / 001
+                </span>
+                <h1 class="wordmark-huge">VEIL</h1>
+                <div class="expansion-row">VISUALIZE. EVALUATE. INVESTIGATE. LOCK.</div>
+            </div>
+
+            <!-- Custom Geometric SVG Security Motif -->
+            <div class="security-graphic-container" aria-hidden="true">
+                <svg class="security-svg-motif" viewBox="0 0 500 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Coordinate grid background -->
+                    <line x1="20" y1="120" x2="480" y2="120" stroke="#AFC9BE" stroke-width="1" stroke-dasharray="4 4" />
+                    <line x1="250" y1="20" x2="250" y2="220" stroke="#AFC9BE" stroke-width="1" stroke-dasharray="4 4" />
+                    <circle cx="250" cy="120" r="90" stroke="#004741" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.35" />
+                    <circle cx="250" cy="120" r="60" stroke="#004741" stroke-width="1.5" opacity="0.6" />
+                    
+                    <!-- Tactile Geometric Shield -->
+                    <path d="M250 50 L310 80 V135 C310 170 250 195 250 195 C250 195 190 170 190 135 V80 L250 50 Z" 
+                          fill="#FAF8F3" stroke="#004741" stroke-width="2.5" />
+                    
+                    <!-- Inner Signal Core -->
+                    <circle cx="250" cy="120" r="14" fill="#004741" />
+                    <circle cx="250" cy="120" r="6" fill="#F0EDE6" />
+
+                    <!-- Satellite Nodes & Telemetry Rings -->
+                    <circle cx="140" cy="70" r="4" fill="#004741" />
+                    <circle cx="140" cy="70" r="10" stroke="#286747" stroke-width="1" opacity="0.5" />
+                    <line x1="140" y1="70" x2="190" y2="100" stroke="#AFC9BE" stroke-width="1" />
+
+                    <circle cx="360" cy="165" r="4" fill="#B83B34" />
+                    <circle cx="360" cy="165" r="10" stroke="#B83B34" stroke-width="1" opacity="0.5" />
+                    <line x1="310" y1="145" x2="360" y2="165" stroke="#AFC9BE" stroke-width="1" />
+
+                    <!-- Precision Technical Annotations -->
+                    <text x="30" y="30" fill="#004741" font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="2">SYS.NODE // 11g-ORCL-PERSIST</text>
+                    <text x="30" y="44" fill="#68716B" font-family="JetBrains Mono, monospace" font-size="9">CIPHER: BCRYPT-10-SALT</text>
+                    <text x="350" y="30" fill="#004741" font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="2">SEC_LEVEL: 10-MAX</text>
+                </svg>
+            </div>
+
+            <div class="story-text-container">
+                <h2 class="story-headline">See beyond the surface.</h2>
+                <p class="story-statement">
+                    One workspace to surface incidents, understand risk, and move from alert to resolution.
+                </p>
+                <div class="story-secondary">Secure what matters.</div>
+            </div>
+
+            <div class="canvas-footer-meta">
+                <span>PAT 4 WEB APPLICATION DEVELOPMENT</span>
+                <span>BACKEND: JAVA SERVLETS &bull; JDBC &bull; ORACLE DATABASE</span>
+            </div>
+        </section>
+
+        <!-- Right Section: Authentication Form -->
+        <main class="auth-form-canvas" aria-label="Login Form">
+            <div class="auth-box-card tactile-surface">
+                
+                <div class="auth-heading-block">
+                    <h2 class="auth-title">Sign In</h2>
+                    <p class="auth-subtitle">Enter verified credentials to unlock your security terminal.</p>
+                </div>
+
+                <div id="login-error-box" class="auth-error-alert" role="alert" aria-live="polite"></div>
+
+                <form id="login-form" novalidate>
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-input" 
+                               placeholder="operator@veil.sec" required autocomplete="username">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="password" name="password" class="form-input" 
+                                   placeholder="••••••••••••" required autocomplete="current-password">
+                            <button type="button" id="btn-toggle-pw" class="toggle-pw-btn" aria-label="Toggle password visibility">SHOW</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btn-submit-login" class="btn-primary-cyprus" style="width: 100%; margin-top: 8px;">
+                        <span>Authenticate</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </form>
+
+                <!-- Valid Demonstration Accounts -->
+                <div class="demo-accounts-panel">
+                    <div class="demo-heading">Academic Evaluation Accounts</div>
+                    <div class="demo-chip-row">
+                        <div class="demo-chip" onclick="fillCredentials('admin@veil.sec', 'admin123')">
+                            <span>admin@veil.sec &bull; <span class="mono">admin123</span></span>
+                            <span class="demo-role-tag">ADMIN</span>
+                        </div>
+                        <div class="demo-chip" onclick="fillCredentials('analyst@veil.sec', 'analyst123')">
+                            <span>analyst@veil.sec &bull; <span class="mono">analyst123</span></span>
+                            <span class="demo-role-tag">USER</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+    </div>
+
+    <script>
+        // Password visibility toggle
+        const toggleBtn = document.getElementById('btn-toggle-pw');
+        const pwInput = document.getElementById('password');
+        toggleBtn.addEventListener('click', () => {
+            if (pwInput.type === 'password') {
+                pwInput.type = 'text';
+                toggleBtn.textContent = 'HIDE';
+            } else {
+                pwInput.type = 'password';
+                toggleBtn.textContent = 'SHOW';
+            }
+        });
+
+        // Quick fill for examination demo
+        function fillCredentials(email, pw) {
+            document.getElementById('email').value = email;
+            document.getElementById('password').value = pw;
+        }
+
+        // Live AJAX Authentication against Java Servlet & Oracle Backend
+        const loginForm = document.getElementById('login-form');
+        const errorBox = document.getElementById('login-error-box');
+        const submitBtn = document.getElementById('btn-submit-login');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorBox.style.display = 'none';
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                showError('Please supply both email address and password.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.querySelector('span').textContent = 'Verifying...';
+
+            try {
+                const response = await fetch('api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const resData = await response.json();
+
+                if (response.ok && resData.success) {
+                    sessionStorage.setItem('veil_user', JSON.stringify(resData.data));
+                    sessionStorage.setItem('veil_csrf', resData.data.csrfToken || '');
+                    window.location.href = 'index.html';
+                } else {
+                    showError(resData.message || 'Invalid email or password.');
+                }
+            } catch (err) {
+                showError('Unable to reach authentication server. Ensure Tomcat is running.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.querySelector('span').textContent = 'Authenticate';
+            }
+        });
+
+        function showError(msg) {
+            errorBox.textContent = msg;
+            errorBox.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
