@@ -1,10 +1,10 @@
 /**
  * VEIL — Interactive 3D Crystal Core Component
- * Implements the layered emerald crystal shield with orbital rings,
- * cursor-responsive tilt, idle float, and live telemetry nodes.
+ * Implements the multi-layered faceted emerald crystal shield, illuminated stepped
+ * pedestal base, orbital rings, cursor-responsive tilt, and live telemetry nodes.
  *
- * Designed with Three.js (local assets/js/three.min.js).
- * Compliant with Cyprus (#004741) & Sand (#F0EDE6) light mode aesthetic.
+ * Built with Three.js (local assets/js/three.min.js).
+ * Strictly compliant with Cyprus (#004741) & Sand (#F0EDE6) light mode aesthetic.
  */
 
 'use strict';
@@ -12,15 +12,14 @@
 (function () {
     let scene, camera, renderer;
     let crystalRootGroup, shieldGroup, pedestalGroup;
-    let coreMesh, innerGlassMesh, outerGlassMesh, outerEdges;
+    let coreMesh, innerGlassMesh, outerGlassMesh, outerEdges, insigniaBadgeMesh;
     let orbitalRing1, orbitalRing2;
     let orbitalNodes = [];
     let raycaster, mouse2D;
     let animFrameId = null;
     let isRunning = false;
-    let isHovered = false;
 
-    // Motion state
+    // Motion & interaction state
     let targetTiltX = 0;
     let targetTiltY = 0;
     let currentTiltX = 0;
@@ -30,17 +29,18 @@
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Palette tokens
+    // Palette tokens aligned with VEIL brand specification
     const COLORS = {
-        cyprusDeep: 0x00332E,
+        cyprusDeep: 0x002B26,
         cyprus: 0x004741,
         cyprusMid: 0x0A5C52,
-        emeraldBright: 0x00A887,
-        emeraldGlow: 0x52B79A,
-        glassOuter: 0xE0F3EE,
-        pedestalGlass: 0x22786A,
-        pedestalSand: 0xE8E3DA,
-        goldEmboss: 0xD4AF37
+        emeraldBright: 0x00E5B8,
+        emeraldGlow: 0x5CE7C8,
+        glassOuter: 0xDDF5EE,
+        pedestalDark: 0x00332D,
+        pedestalSand: 0xE2DDD3,
+        pedestalSandLight: 0xEAE5DC,
+        goldTrim: 0xD4AF37
     };
 
     function isWebGLAvailable() {
@@ -61,31 +61,32 @@
             return;
         }
 
-        const width = container.clientWidth || 520;
+        const width = container.clientWidth || 540;
         const height = container.clientHeight || 440;
 
         // 1. Scene
         scene = new THREE.Scene();
 
-        // 2. Camera
-        camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 100);
-        camera.position.set(0, 0.35, 6.4);
+        // 2. Camera: carefully angled to frame both the crystal shield & the illuminated pedestal base
+        camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 100);
+        camera.position.set(0, 0.10, 5.5);
+        camera.lookAt(0, 0.05, 0);
 
-        // 3. Renderer
+        // 3. Renderer with transparent background and high dynamic range tone mapping
         renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
         renderer.setSize(width, height);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.05;
+        renderer.toneMappingExposure = 1.0;
         container.innerHTML = '';
         container.appendChild(renderer.domElement);
 
-        // 4. Lighting
+        // 4. Lighting setup
         setupLighting();
 
-        // 5. Build Crystal Hierarchy
+        // 5. Build 3D Hierarchy
         crystalRootGroup = new THREE.Group();
-        crystalRootGroup.position.set(0, -0.15, 0);
+        crystalRootGroup.position.set(0, 0, 0);
         scene.add(crystalRootGroup);
 
         buildShieldAssemblies();
@@ -93,7 +94,7 @@
         buildOrbitalRings();
         buildOrbitalNodes();
 
-        // 6. Interaction
+        // 6. Raycasting & Event Listeners
         raycaster = new THREE.Raycaster();
         mouse2D = new THREE.Vector2(-999, -999);
 
@@ -104,96 +105,118 @@
     }
 
     function setupLighting() {
-        // Soft ambient light with warm Sand tone
-        const ambientLight = new THREE.AmbientLight(0xFFFAF2, 0.9);
+        // Balanced ambient light tuned to warm Sand environment
+        const ambientLight = new THREE.AmbientLight(0xFFFAF2, 0.55);
         scene.add(ambientLight);
 
-        // Main key light from top-front
-        const keyLight = new THREE.DirectionalLight(0xF0FFFA, 1.4);
-        keyLight.position.set(3.5, 4.5, 4.0);
+        // Main key light from upper-right front (creates sharp specular facet highlights)
+        const keyLight = new THREE.DirectionalLight(0xE6FFF6, 1.25);
+        keyLight.position.set(3.2, 4.0, 4.0);
         scene.add(keyLight);
 
-        // Cool rim light from rear-left
-        const rimLight = new THREE.DirectionalLight(0x7CEAD8, 0.7);
-        rimLight.position.set(-4.0, -1.5, -3.0);
+        // Rim light from rear-left to give crisp cyan edge contouring
+        const rimLight = new THREE.DirectionalLight(0x60E8D4, 0.85);
+        rimLight.position.set(-3.5, 2.0, -2.5);
         scene.add(rimLight);
 
-        // Internal emerald point light inside crystal core
-        const corePointLight = new THREE.PointLight(0x00E5B8, 1.2, 5);
-        corePointLight.position.set(0, 0.2, 0.8);
+        // Internal emerald point light inside the crystal core to create luminous depth
+        const corePointLight = new THREE.PointLight(0x00FFBB, 1.8, 6.0);
+        corePointLight.position.set(0, 0.35, 0.4);
         scene.add(corePointLight);
 
-        // Soft warm bounce from pedestal
+        // Soft bounce light from the sand floor/pedestal below
         const bounceLight = new THREE.DirectionalLight(0xF0EDE6, 0.4);
-        bounceLight.position.set(0, -4, 2);
+        bounceLight.position.set(0, -3.0, 2.0);
         scene.add(bounceLight);
     }
 
     function createShieldShape(scale = 1.0) {
         const shape = new THREE.Shape();
         const s = scale;
-        // Crest / Shield outline
-        shape.moveTo(0, 1.55 * s);
-        shape.lineTo(1.05 * s, 1.35 * s);
-        shape.lineTo(1.12 * s, 0.35 * s);
-        shape.quadraticCurveTo(0.95 * s, -0.65 * s, 0, -1.65 * s);
-        shape.quadraticCurveTo(-0.95 * s, -0.65 * s, -1.12 * s, 0.35 * s);
-        shape.lineTo(-1.05 * s, 1.35 * s);
+
+        // Authentic shield crest silhouette with top bevel, shoulders, and tapered point
+        shape.moveTo(0, 1.48 * s);
+        shape.lineTo(0.95 * s, 1.30 * s);
+        shape.lineTo(1.08 * s, 0.45 * s);
+        shape.quadraticCurveTo(0.92 * s, -0.65 * s, 0, -1.55 * s);
+        shape.quadraticCurveTo(-0.92 * s, -0.65 * s, -1.08 * s, 0.45 * s);
+        shape.lineTo(-0.95 * s, 1.30 * s);
         shape.closePath();
         return shape;
     }
 
-    function createVeilEmbossTexture() {
+    function createInsigniaTexture() {
         const canvas = document.createElement('canvas');
         canvas.width = 512;
         canvas.height = 512;
         const ctx = canvas.getContext('2d');
 
-        // Transparent background
         ctx.clearRect(0, 0, 512, 512);
 
-        // Technical decorative border
-        ctx.strokeStyle = 'rgba(230, 248, 242, 0.25)';
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.arc(256, 256, 170, 0, Math.PI * 2);
-        ctx.stroke();
-
-        // Subtle quadrant ticks
-        ctx.strokeStyle = 'rgba(230, 248, 242, 0.4)';
+        // Technical Reticle Circle
+        ctx.strokeStyle = 'rgba(230, 255, 248, 0.45)';
         ctx.lineWidth = 3;
-        for (let i = 0; i < 4; i++) {
-            const angle = (i * Math.PI) / 2;
-            ctx.beginPath();
-            ctx.moveTo(256 + Math.cos(angle) * 160, 256 + Math.sin(angle) * 160);
-            ctx.lineTo(256 + Math.cos(angle) * 180, 256 + Math.sin(angle) * 180);
-            ctx.stroke();
-        }
-
-        // Geometric V Emblem
-        ctx.strokeStyle = 'rgba(235, 245, 240, 0.85)';
-        ctx.lineWidth = 6;
         ctx.beginPath();
-        ctx.moveTo(216, 170);
-        ctx.lineTo(256, 230);
-        ctx.lineTo(296, 170);
+        ctx.arc(256, 256, 175, 0, Math.PI * 2);
         ctx.stroke();
 
-        // VEIL Wordmark
-        ctx.font = 'bold 54px -apple-system, "Aquire", "Inter", sans-serif';
+        // Corner framing brackets [ ]
+        ctx.strokeStyle = 'rgba(92, 231, 200, 0.9)';
+        ctx.lineWidth = 4;
+        const bSize = 35;
+        const bRad = 150;
+        
+        // Top-left
+        ctx.beginPath();
+        ctx.moveTo(256 - bRad, 256 - bRad + bSize);
+        ctx.lineTo(256 - bRad, 256 - bRad);
+        ctx.lineTo(256 - bRad + bSize, 256 - bRad);
+        ctx.stroke();
+
+        // Top-right
+        ctx.beginPath();
+        ctx.moveTo(256 + bRad - bSize, 256 - bRad);
+        ctx.lineTo(256 + bRad, 256 - bRad);
+        ctx.lineTo(256 + bRad, 256 - bRad + bSize);
+        ctx.stroke();
+
+        // Bottom-left
+        ctx.beginPath();
+        ctx.moveTo(256 - bRad, 256 + bRad - bSize);
+        ctx.lineTo(256 - bRad, 256 + bRad);
+        ctx.lineTo(256 - bRad + bSize, 256 + bRad);
+        ctx.stroke();
+
+        // Bottom-right
+        ctx.beginPath();
+        ctx.moveTo(256 + bRad - bSize, 256 + bRad);
+        ctx.lineTo(256 + bRad, 256 + bRad);
+        ctx.lineTo(256 + bRad, 256 + bRad - bSize);
+        ctx.stroke();
+
+        // Geometric V Icon
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(226, 175);
+        ctx.lineTo(256, 222);
+        ctx.lineTo(286, 175);
+        ctx.stroke();
+
+        // Crisp VEIL Wordmark
+        ctx.font = 'bold 56px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
         ctx.fillStyle = '#FFFFFF';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.letterSpacing = '10px';
-        ctx.shadowColor = 'rgba(0, 71, 65, 0.8)';
-        ctx.shadowBlur = 12;
-        ctx.fillText('VEIL', 256, 280);
+        ctx.shadowColor = 'rgba(0, 45, 38, 0.95)';
+        ctx.shadowBlur = 14;
+        ctx.fillText('VEIL', 256, 275);
 
-        // Security subline
-        ctx.font = '600 16px -apple-system, "Inter", monospace';
-        ctx.fillStyle = 'rgba(210, 240, 232, 0.85)';
+        // Subtitle security indicator
+        ctx.font = '600 15px -apple-system, monospace';
+        ctx.fillStyle = '#A5F2DE';
         ctx.shadowBlur = 0;
-        ctx.fillText('CORE SENTINEL', 256, 320);
+        ctx.fillText('CORE INTELLIGENCE', 256, 318);
 
         const texture = new THREE.CanvasTexture(canvas);
         texture.needsUpdate = true;
@@ -202,145 +225,181 @@
 
     function buildShieldAssemblies() {
         shieldGroup = new THREE.Group();
+        shieldGroup.position.set(0, 0.30, 0);
         crystalRootGroup.add(shieldGroup);
 
-        // 1. Core Faceted Crystal (Deep Cyprus Green)
-        const coreShape = createShieldShape(0.92);
+        // 1. Core Gemstone Crystal (Deep Cyprus Green with sharp flat-shaded facets)
+        const coreShape = createShieldShape(0.90);
         const coreGeo = new THREE.ExtrudeGeometry(coreShape, {
-            depth: 0.28,
+            depth: 0.30,
             bevelEnabled: true,
-            bevelSegments: 2,
+            bevelSegments: 1, // Single segment produces crisp, diamond-cut crystal facets!
             steps: 1,
-            bevelSize: 0.12,
-            bevelThickness: 0.14
+            bevelSize: 0.16,
+            bevelThickness: 0.16
         });
         coreGeo.center();
 
-        const embossTexture = createVeilEmbossTexture();
         const coreMat = new THREE.MeshStandardMaterial({
             color: COLORS.cyprus,
-            roughness: 0.18,
-            metalness: 0.15,
-            map: embossTexture,
-            bumpMap: embossTexture,
-            bumpScale: 0.05
+            emissive: 0x00241E,
+            emissiveIntensity: 0.45,
+            roughness: 0.14,
+            metalness: 0.22,
+            flatShading: true // Essential for cut-gemstone facet specular glints
         });
 
         coreMesh = new THREE.Mesh(coreGeo, coreMat);
         shieldGroup.add(coreMesh);
 
-        // 2. Middle Transparent Glass Shield Contour
-        const midShape = createShieldShape(1.04);
+        // 2. High-Contrast Floating Front Insignia Emblem Badge
+        const badgeTexture = createInsigniaTexture();
+        const badgeGeo = new THREE.PlaneGeometry(1.35, 1.35);
+        const badgeMat = new THREE.MeshBasicMaterial({
+            map: badgeTexture,
+            transparent: true,
+            opacity: 0.96,
+            depthWrite: false
+        });
+        insigniaBadgeMesh = new THREE.Mesh(badgeGeo, badgeMat);
+        insigniaBadgeMesh.position.set(0, 0, 0.34);
+        shieldGroup.add(insigniaBadgeMesh);
+
+        // 3. Middle Emerald Glass Membrane Layer
+        const midShape = createShieldShape(1.05);
         const midGeo = new THREE.ExtrudeGeometry(midShape, {
-            depth: 0.14,
+            depth: 0.22,
             bevelEnabled: true,
-            bevelSegments: 2,
+            bevelSegments: 1,
             steps: 1,
-            bevelSize: 0.08,
-            bevelThickness: 0.08
+            bevelSize: 0.10,
+            bevelThickness: 0.10
         });
         midGeo.center();
 
         const midMat = new THREE.MeshStandardMaterial({
             color: COLORS.cyprusMid,
             transparent: true,
-            opacity: 0.32,
-            roughness: 0.12,
-            metalness: 0.05
+            opacity: 0.35,
+            roughness: 0.10,
+            metalness: 0.10,
+            depthWrite: false
         });
 
         innerGlassMesh = new THREE.Mesh(midGeo, midMat);
-        innerGlassMesh.position.z = 0.02;
+        innerGlassMesh.position.z = 0.04;
         shieldGroup.add(innerGlassMesh);
 
-        // 3. Outer Translucent Glass Shell
-        const outerShape = createShieldShape(1.18);
+        // 4. Outer Translucent Crystal Glass Exoskeleton
+        const outerShape = createShieldShape(1.20);
         const outerGeo = new THREE.ExtrudeGeometry(outerShape, {
-            depth: 0.38,
+            depth: 0.40,
             bevelEnabled: true,
-            bevelSegments: 3,
+            bevelSegments: 2,
             steps: 1,
-            bevelSize: 0.14,
-            bevelThickness: 0.16
+            bevelSize: 0.16,
+            bevelThickness: 0.18
         });
         outerGeo.center();
 
         const outerMat = new THREE.MeshStandardMaterial({
             color: COLORS.glassOuter,
             transparent: true,
-            opacity: 0.26,
-            roughness: 0.15,
-            metalness: 0.08
+            opacity: 0.38,
+            roughness: 0.08,
+            metalness: 0.12,
+            depthWrite: false
         });
 
         outerGlassMesh = new THREE.Mesh(outerGeo, outerMat);
         shieldGroup.add(outerGlassMesh);
 
-        // 4. Crisp Facet Edges Contour
+        // 5. Crisp Glowing Mint Facet Edge Contours
         const edgesGeo = new THREE.EdgesGeometry(outerGeo, 24);
         const edgesMat = new THREE.LineBasicMaterial({
-            color: COLORS.emeraldGlow,
+            color: COLORS.emeraldBright,
             transparent: true,
-            opacity: 0.55
+            opacity: 0.85
         });
         outerEdges = new THREE.LineSegments(edgesGeo, edgesMat);
-        outerGlassMesh.add(outerEdges);
+        shieldGroup.add(outerEdges);
     }
 
     function buildPedestal() {
         pedestalGroup = new THREE.Group();
-        pedestalGroup.position.set(0, -1.85, 0);
+        // Positioned so the tiered structure and illuminated glowing rims are fully visible in the canvas
+        pedestalGroup.position.set(0, -1.25, 0);
         crystalRootGroup.add(pedestalGroup);
 
-        // Top frosted glass disc
-        const topDiscGeo = new THREE.CylinderGeometry(1.65, 1.72, 0.14, 48);
+        // Tier 1 (Top Glass / Cyprus Plinth)
+        const topDiscGeo = new THREE.CylinderGeometry(1.45, 1.52, 0.08, 64);
         const topDiscMat = new THREE.MeshStandardMaterial({
-            color: COLORS.pedestalGlass,
-            transparent: true,
-            opacity: 0.45,
-            roughness: 0.2,
-            metalness: 0.15
+            color: COLORS.pedestalDark,
+            roughness: 0.15,
+            metalness: 0.20
         });
         const topDisc = new THREE.Mesh(topDiscGeo, topDiscMat);
+        topDisc.position.y = 0.04;
         pedestalGroup.add(topDisc);
 
-        // Illuminated Cyprus ring on rim
-        const glowRingGeo = new THREE.TorusGeometry(1.7, 0.02, 16, 64);
-        glowRingGeo.rotateX(Math.PI / 2);
-        const glowRingMat = new THREE.MeshBasicMaterial({
-            color: COLORS.emeraldBright,
-            transparent: true,
-            opacity: 0.75
+        // Glowing Neon Cyan Rim on Tier 1
+        const glowRing1Geo = new THREE.TorusGeometry(1.48, 0.022, 16, 64);
+        glowRing1Geo.rotateX(Math.PI / 2);
+        const glowRing1Mat = new THREE.MeshBasicMaterial({
+            color: COLORS.emeraldBright
         });
-        const glowRing = new THREE.Mesh(glowRingGeo, glowRingMat);
-        glowRing.position.y = 0.07;
-        pedestalGroup.add(glowRing);
+        const glowRing1 = new THREE.Mesh(glowRing1Geo, glowRing1Mat);
+        glowRing1.position.y = 0.08;
+        pedestalGroup.add(glowRing1);
 
-        // Lower stepped Sand pedestal platform
-        const baseDiscGeo = new THREE.CylinderGeometry(2.15, 2.25, 0.12, 48);
-        const baseDiscMat = new THREE.MeshStandardMaterial({
+        // Tier 2 (Middle Stepped Sand Metallic Plinth)
+        const midDiscGeo = new THREE.CylinderGeometry(1.85, 1.95, 0.10, 64);
+        const midDiscMat = new THREE.MeshStandardMaterial({
             color: COLORS.pedestalSand,
-            roughness: 0.35,
+            roughness: 0.30,
+            metalness: 0.12
+        });
+        const midDisc = new THREE.Mesh(midDiscGeo, midDiscMat);
+        midDisc.position.y = -0.05;
+        pedestalGroup.add(midDisc);
+
+        // Glowing Mint Rim on Tier 2
+        const glowRing2Geo = new THREE.TorusGeometry(1.88, 0.016, 16, 64);
+        glowRing2Geo.rotateX(Math.PI / 2);
+        const glowRing2Mat = new THREE.MeshBasicMaterial({
+            color: COLORS.emeraldGlow,
+            transparent: true,
+            opacity: 0.85
+        });
+        const glowRing2 = new THREE.Mesh(glowRing2Geo, glowRing2Mat);
+        glowRing2.position.y = 0.0;
+        pedestalGroup.add(glowRing2);
+
+        // Tier 3 (Base Foundation Disc)
+        const baseDiscGeo = new THREE.CylinderGeometry(2.25, 2.35, 0.08, 64);
+        const baseDiscMat = new THREE.MeshStandardMaterial({
+            color: COLORS.pedestalSandLight,
+            roughness: 0.40,
             metalness: 0.05
         });
         const baseDisc = new THREE.Mesh(baseDiscGeo, baseDiscMat);
-        baseDisc.position.y = -0.12;
+        baseDisc.position.y = -0.14;
         pedestalGroup.add(baseDisc);
 
-        // Soft contact shadow plane beneath
+        // Soft Radial Contact Shadow Ground Plane
         const shadowCanvas = document.createElement('canvas');
         shadowCanvas.width = 256;
         shadowCanvas.height = 256;
         const sctx = shadowCanvas.getContext('2d');
         const grad = sctx.createRadialGradient(128, 128, 10, 128, 128, 128);
-        grad.addColorStop(0, 'rgba(0, 50, 45, 0.35)');
-        grad.addColorStop(0.5, 'rgba(0, 50, 45, 0.12)');
+        grad.addColorStop(0, 'rgba(0, 50, 45, 0.40)');
+        grad.addColorStop(0.45, 'rgba(0, 50, 45, 0.15)');
         grad.addColorStop(1, 'rgba(240, 237, 230, 0)');
         sctx.fillStyle = grad;
         sctx.fillRect(0, 0, 256, 256);
 
         const shadowTexture = new THREE.CanvasTexture(shadowCanvas);
-        const shadowGeo = new THREE.PlaneGeometry(5.2, 5.2);
+        const shadowGeo = new THREE.PlaneGeometry(5.4, 5.4);
         const shadowMat = new THREE.MeshBasicMaterial({
             map: shadowTexture,
             transparent: true,
@@ -349,33 +408,35 @@
         });
         const shadowPlane = new THREE.Mesh(shadowGeo, shadowMat);
         shadowPlane.rotation.x = -Math.PI / 2;
-        shadowPlane.position.y = -0.22;
+        shadowPlane.position.y = -0.19;
         pedestalGroup.add(shadowPlane);
     }
 
     function buildOrbitalRings() {
-        // Orbital Ring 1 (tilted forward-right)
-        const ring1Geo = new THREE.TorusGeometry(2.25, 0.016, 16, 100);
+        // Orbital Ring 1 (sweeping forward-diagonal in metallic Cyprus)
+        const ring1Geo = new THREE.TorusGeometry(2.15, 0.016, 16, 100);
         const ring1Mat = new THREE.MeshStandardMaterial({
             color: COLORS.cyprusMid,
             roughness: 0.25,
-            metalness: 0.8
+            metalness: 0.80
         });
         orbitalRing1 = new THREE.Mesh(ring1Geo, ring1Mat);
-        orbitalRing1.rotation.set(Math.PI * 0.34, 0.25, -0.2);
+        orbitalRing1.position.y = 0.30;
+        orbitalRing1.rotation.set(Math.PI * 0.36, 0.22, -0.18);
         crystalRootGroup.add(orbitalRing1);
 
-        // Orbital Ring 2 (tilted opposing)
-        const ring2Geo = new THREE.TorusGeometry(1.9, 0.012, 16, 100);
+        // Orbital Ring 2 (counter-tilted in glowing cyan)
+        const ring2Geo = new THREE.TorusGeometry(1.80, 0.012, 16, 100);
         const ring2Mat = new THREE.MeshStandardMaterial({
             color: COLORS.emeraldGlow,
             transparent: true,
             opacity: 0.75,
-            roughness: 0.3,
-            metalness: 0.7
+            roughness: 0.30,
+            metalness: 0.70
         });
         orbitalRing2 = new THREE.Mesh(ring2Geo, ring2Mat);
-        orbitalRing2.rotation.set(-Math.PI * 0.3, 0.4, 0.35);
+        orbitalRing2.position.y = 0.30;
+        orbitalRing2.rotation.set(-Math.PI * 0.32, 0.38, 0.30);
         crystalRootGroup.add(orbitalRing2);
     }
 
@@ -383,10 +444,10 @@
         orbitalNodes = [];
 
         const nodeData = [
-            { ring: 1, speed: 0.45, offset: 0.0, radius: 2.25, color: COLORS.emeraldBright, name: 'Active Bastion Sentinel', status: 'Online' },
-            { ring: 1, speed: 0.45, offset: Math.PI, radius: 2.25, color: 0x228B22, name: 'Identity & MFA Broker', status: 'Secured' },
-            { ring: 2, speed: -0.38, offset: 0.8, radius: 1.9, color: COLORS.emeraldBright, name: 'API Gateway Filter', status: 'Monitoring' },
-            { ring: 2, speed: -0.38, offset: 0.8 + Math.PI, radius: 1.9, color: 0x1E7B6C, name: 'Cloud Storage Monitor', status: 'Secured' }
+            { ring: 1, speed: 0.45, offset: 0.0, radius: 2.15, color: COLORS.emeraldBright, name: 'Active Bastion Sentinel', status: 'Online' },
+            { ring: 1, speed: 0.45, offset: Math.PI, radius: 2.15, color: 0x228B22, name: 'Identity & MFA Broker', status: 'Secured' },
+            { ring: 2, speed: -0.38, offset: 0.8, radius: 1.80, color: COLORS.emeraldBright, name: 'API Gateway Filter', status: 'Monitoring' },
+            { ring: 2, speed: -0.38, offset: 0.8 + Math.PI, radius: 1.80, color: 0x1E7B6C, name: 'Cloud Storage Sentinel', status: 'Secured' }
         ];
 
         nodeData.forEach((data, index) => {
@@ -397,9 +458,9 @@
             const sphereMat = new THREE.MeshStandardMaterial({
                 color: data.color,
                 emissive: data.color,
-                emissiveIntensity: 0.6,
-                roughness: 0.2,
-                metalness: 0.3
+                emissiveIntensity: 0.65,
+                roughness: 0.20,
+                metalness: 0.30
             });
             const sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
             nodeGroup.add(sphereMesh);
@@ -409,7 +470,7 @@
             const haloMat = new THREE.MeshBasicMaterial({
                 color: data.color,
                 transparent: true,
-                opacity: 0.25
+                opacity: 0.28
             });
             const haloMesh = new THREE.Mesh(haloGeo, haloMat);
             nodeGroup.add(haloMesh);
@@ -435,7 +496,6 @@
     }
 
     function setupEventListeners(container) {
-        // Mouse tilt
         const stageWrapper = document.getElementById('crystal-stage-wrapper') || container;
 
         stageWrapper.addEventListener('mousemove', (e) => {
@@ -443,8 +503,8 @@
             const relX = (e.clientX - rect.left) / rect.width;
             const relY = (e.clientY - rect.top) / rect.height;
 
-            targetTiltY = (relX - 0.5) * 0.45;
-            targetTiltX = (relY - 0.5) * 0.35;
+            targetTiltY = (relX - 0.5) * 0.42;
+            targetTiltX = (relY - 0.5) * 0.32;
 
             // Raycasting coords
             const cRect = container.getBoundingClientRect();
@@ -465,10 +525,8 @@
             handleRaycastClick(e);
         });
 
-        // Window resize
         window.addEventListener('resize', handleResize);
 
-        // Visibility lifecycle (saves CPU when user switches tabs)
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 stopLoop();
@@ -505,7 +563,7 @@
     function clearNodeHover() {
         if (hoveredNode) {
             hoveredNode.mesh.scale.set(1.0, 1.0, 1.0);
-            hoveredNode.mesh.material.emissiveIntensity = 0.6;
+            hoveredNode.mesh.material.emissiveIntensity = 0.65;
             hoveredNode = null;
         }
         hideTooltip();
@@ -539,7 +597,6 @@
         const intersects = raycaster.intersectObjects(hitTargets, false);
 
         if (intersects.length > 0) {
-            // Clicked an orbital node -> trigger toast or register switch
             if (typeof window.showToast === 'function') {
                 window.showToast(`Inspecting node: ${intersects[0].object.userData.data.name}`, 'info');
             }
@@ -547,7 +604,7 @@
                 setTimeout(() => window.switchView('register'), 400);
             }
         } else {
-            // Check if shield was clicked
+            // Check if crystal shield was clicked
             const shieldIntersects = raycaster.intersectObject(coreMesh, false);
             if (shieldIntersects.length > 0) {
                 pulseShield();
@@ -557,14 +614,13 @@
 
     function pulseShield() {
         if (!coreMesh) return;
-        let scale = 1.0;
         const startTime = performance.now();
 
         function animatePulse(now) {
             const elapsed = (now - startTime) / 1000;
             if (elapsed < 0.35) {
                 const progress = elapsed / 0.35;
-                const factor = 1.0 + Math.sin(progress * Math.PI) * 0.06;
+                const factor = 1.0 + Math.sin(progress * Math.PI) * 0.05;
                 shieldGroup.scale.set(factor, factor, factor);
                 requestAnimationFrame(animatePulse);
             } else {
@@ -582,7 +638,7 @@
         const container = document.getElementById('crystal-canvas-container');
         if (!container || !renderer || !camera) return;
 
-        const width = container.clientWidth || 520;
+        const width = container.clientWidth || 540;
         const height = container.clientHeight || 440;
 
         camera.aspect = width / height;
@@ -618,13 +674,13 @@
         currentTiltY += (targetTiltY - currentTiltY) * lerpFactor;
 
         // Idle floating (bobbing vertically)
-        const floatY = prefersReducedMotion ? 0 : Math.sin(time * 1.3) * 0.06;
-        const floatRotZ = prefersReducedMotion ? 0 : Math.sin(time * 0.8) * 0.02;
+        const floatY = prefersReducedMotion ? 0 : Math.sin(time * 1.3) * 0.05;
+        const floatRotZ = prefersReducedMotion ? 0 : Math.sin(time * 0.8) * 0.015;
 
         if (shieldGroup) {
-            shieldGroup.position.y = floatY;
+            shieldGroup.position.y = 0.30 + floatY;
             shieldGroup.rotation.x = currentTiltX;
-            shieldGroup.rotation.y = currentTiltY + (prefersReducedMotion ? 0 : Math.sin(time * 0.5) * 0.05);
+            shieldGroup.rotation.y = currentTiltY + (prefersReducedMotion ? 0 : Math.sin(time * 0.5) * 0.04);
             shieldGroup.rotation.z = floatRotZ;
         }
 
@@ -646,10 +702,10 @@
 
             if (node.data.ring === 1) {
                 // Tilted to match ring 1 orientation
-                node.group.position.set(x * 0.92, y * 0.38 + floatY * 0.5, y * 0.85);
+                node.group.position.set(x * 0.92, 0.30 + y * 0.38 + floatY * 0.5, y * 0.85);
             } else {
                 // Tilted to match ring 2 orientation
-                node.group.position.set(x * 0.88, y * 0.52 + floatY * 0.5, -y * 0.78);
+                node.group.position.set(x * 0.88, 0.30 + y * 0.52 + floatY * 0.5, -y * 0.78);
             }
         });
 
@@ -657,7 +713,7 @@
         animFrameId = requestAnimationFrame(renderFrame);
     }
 
-    // Fallback renderer when WebGL is unavailable
+    // High quality vector fallback when WebGL is unavailable
     function initFallbackStage(container) {
         container.innerHTML = `
             <div class="crystal-fallback-art" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
@@ -704,7 +760,6 @@
         }
     };
 
-    // Auto-init on DOM readiness
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initCrystalCore);
     } else {
