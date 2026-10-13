@@ -48,10 +48,10 @@ public class DatabaseConfig {
     public static synchronized void initialize() {
         if (initialized) return;
 
-        String oracleDriver = System.getProperty(ENV_DB_DRIVER, System.getenv().getOrDefault(ENV_DB_DRIVER, DEFAULT_ORACLE_DRIVER));
-        String oracleUrl = System.getProperty(ENV_DB_URL, System.getenv().getOrDefault(ENV_DB_URL, DEFAULT_ORACLE_URL));
-        String oracleUser = System.getProperty(ENV_DB_USER, System.getenv().getOrDefault(ENV_DB_USER, DEFAULT_ORACLE_USER));
-        String oraclePass = System.getProperty(ENV_DB_PASS, System.getenv().getOrDefault(ENV_DB_PASS, DEFAULT_ORACLE_PASS));
+        String oracleDriver = getConfigValue(ENV_DB_DRIVER, DEFAULT_ORACLE_DRIVER);
+        String oracleUrl = getConfigValue(ENV_DB_URL, DEFAULT_ORACLE_URL);
+        String oracleUser = getConfigValue(ENV_DB_USER, DEFAULT_ORACLE_USER);
+        String oraclePass = getConfigValue(ENV_DB_PASS, DEFAULT_ORACLE_PASS);
 
         LOGGER.info("VEIL Initializing JDBC connection pool targeting: " + oracleUrl);
 
@@ -79,6 +79,18 @@ public class DatabaseConfig {
         initialized = true;
     }
 
+    private static String getConfigValue(String key, String defaultValue) {
+        String sysProp = System.getProperty(key);
+        if (sysProp != null && !sysProp.trim().isEmpty()) {
+            return sysProp.trim();
+        }
+        String envVal = System.getenv(key);
+        if (envVal != null && !envVal.trim().isEmpty()) {
+            return envVal.trim();
+        }
+        return defaultValue;
+    }
+
     /**
      * Obtains a live JDBC Connection.
      */
@@ -91,9 +103,9 @@ public class DatabaseConfig {
             return DriverManager.getConnection(FALLBACK_H2_URL, FALLBACK_H2_USER, FALLBACK_H2_PASS);
         }
 
-        String oracleUrl = System.getProperty(ENV_DB_URL, System.getenv().getOrDefault(ENV_DB_URL, DEFAULT_ORACLE_URL));
-        String oracleUser = System.getProperty(ENV_DB_USER, System.getenv().getOrDefault(ENV_DB_USER, DEFAULT_ORACLE_USER));
-        String oraclePass = System.getProperty(ENV_DB_PASS, System.getenv().getOrDefault(ENV_DB_PASS, DEFAULT_ORACLE_PASS));
+        String oracleUrl = getConfigValue(ENV_DB_URL, DEFAULT_ORACLE_URL);
+        String oracleUser = getConfigValue(ENV_DB_USER, DEFAULT_ORACLE_USER);
+        String oraclePass = getConfigValue(ENV_DB_PASS, DEFAULT_ORACLE_PASS);
 
         try {
             return DriverManager.getConnection(oracleUrl, oracleUser, oraclePass);

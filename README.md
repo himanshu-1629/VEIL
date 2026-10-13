@@ -483,3 +483,32 @@ VEIL is strictly **Light Mode**:
   --info-soft: #E5F0F3;
 }
 ```
+
+---
+
+## 34. Online Deployment & Remote SQL*Plus / JDBC / ODBC Architecture
+
+VEIL satisfies production and university evaluation criteria with **zero hardcoded credentials**:
+
+1. **Online Public Web Application**: Deployed via the root [Dockerfile](Dockerfile) on Render, Railway, or Fly.io with dynamic `$PORT` binding.
+2. **Online Database Access**:
+   - **Remote SQL\*Plus**: Accessible over the internet via `sqlplus <USER>/<PASSWORD>@<HOST>:<PORT>/<SERVICE>` (e.g. `sqlplus system/oracle123@1.tcp.ngrok.io:12345/FREEPDB1`).
+   - **Remote JDBC**: Accessible over the internet via `jdbc:oracle:thin:@<HOST>:<PORT>/<SERVICE>`.
+   - **Remote ODBC**: Accessible via standard Oracle ODBC driver with host, port, and service parameters.
+3. **Zero Hardcoded Credentials**: Configured 100% via environment variables:
+   - `VEIL_DB_DRIVER`
+   - `VEIL_DB_URL`
+   - `VEIL_DB_USER`
+   - `VEIL_DB_PASSWORD`
+
+See [docs/ONLINE_DEPLOYMENT.md](docs/ONLINE_DEPLOYMENT.md) for step-by-step instructions.
+
+---
+
+## 35. Academic Attribution & PAT 4 Credits
+
+- **Developer:** Himanshu Singh
+- **Faculty Guide:** Dr. A. Swaminathan Sir
+- **Academic Context:** PAT 4 Web Application Development Laboratory Experiment
+- **Evaluation Criteria:** Relational Constraints, Multi-Tier Java Servlets, PreparedStatements, Session RBAC, Zero-Hardcode Config, Remote Oracle SQL*Plus & JDBC Validation.
+
