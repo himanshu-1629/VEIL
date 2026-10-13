@@ -90,12 +90,57 @@ public class IncidentDao {
         List<Object> params = new ArrayList<>();
 
         if (search != null && !search.trim().isEmpty()) {
-            String likePattern = "%" + search.trim().toLowerCase() + "%";
-            sql.append("AND (LOWER(i.THREAT) LIKE ? OR LOWER(i.AFFECTED_SYSTEM) LIKE ? OR LOWER(u.USER_NAME) LIKE ? OR LOWER(i.INCIDENT_TYPE) LIKE ?) ");
-            params.add(likePattern);
-            params.add(likePattern);
-            params.add(likePattern);
-            params.add(likePattern);
+            String trimmed = search.trim();
+            String likePattern = "%" + trimmed.toLowerCase() + "%";
+
+            // Extract numeric digits if user entered e.g. "INC-5001", "#5001", "inc 5001", or "5001"
+            String digitsOnly = trimmed.replaceAll("(?i)^inc[-_\\s#]*", "").replaceAll("[^0-9]", "").trim();
+
+            if (!digitsOnly.isEmpty()) {
+                try {
+                    long searchId = Long.parseLong(digitsOnly);
+                    sql.append("AND (LOWER(i.THREAT) LIKE ? " +
+                               "OR LOWER(i.AFFECTED_SYSTEM) LIKE ? " +
+                               "OR LOWER(u.USER_NAME) LIKE ? " +
+                               "OR LOWER(i.INCIDENT_TYPE) LIKE ? " +
+                               "OR LOWER(i.DESCRIPTION) LIKE ? " +
+                               "OR i.INCIDENT_ID = ? " +
+                               "OR CAST(i.INCIDENT_ID AS VARCHAR(30)) LIKE ?) ");
+                    params.add(likePattern);
+                    params.add(likePattern);
+                    params.add(likePattern);
+                    params.add(likePattern);
+                    params.add(likePattern);
+                    params.add(searchId);
+                    params.add("%" + digitsOnly + "%");
+                } catch (NumberFormatException nfe) {
+                    sql.append("AND (LOWER(i.THREAT) LIKE ? " +
+                               "OR LOWER(i.AFFECTED_SYSTEM) LIKE ? " +
+                               "OR LOWER(u.USER_NAME) LIKE ? " +
+                               "OR LOWER(i.INCIDENT_TYPE) LIKE ? " +
+                               "OR LOWER(i.DESCRIPTION) LIKE ? " +
+                               "OR CAST(i.INCIDENT_ID AS VARCHAR(30)) LIKE ?) ");
+                    params.add(likePattern);
+                    params.add(likePattern);
+                    params.add(likePattern);
+                    params.add(likePattern);
+                    params.add(likePattern);
+                    params.add(likePattern);
+                }
+            } else {
+                sql.append("AND (LOWER(i.THREAT) LIKE ? " +
+                           "OR LOWER(i.AFFECTED_SYSTEM) LIKE ? " +
+                           "OR LOWER(u.USER_NAME) LIKE ? " +
+                           "OR LOWER(i.INCIDENT_TYPE) LIKE ? " +
+                           "OR LOWER(i.DESCRIPTION) LIKE ? " +
+                           "OR CAST(i.INCIDENT_ID AS VARCHAR(30)) LIKE ?) ");
+                params.add(likePattern);
+                params.add(likePattern);
+                params.add(likePattern);
+                params.add(likePattern);
+                params.add(likePattern);
+                params.add(likePattern);
+            }
         }
 
         if (status != null && !status.trim().isEmpty() && !status.equalsIgnoreCase("ALL")) {
