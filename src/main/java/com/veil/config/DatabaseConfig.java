@@ -42,6 +42,9 @@ public class DatabaseConfig {
     private static volatile boolean isPostgres = false;
     private static volatile String lastConnectionError = null;
     private static volatile String targetUrl = null;
+    private static volatile String activeUrl = null;
+    private static volatile String activeUser = null;
+    private static volatile String activePass = null;
     private static String activeEngineName = "Oracle Database";
 
     static {
@@ -51,24 +54,30 @@ public class DatabaseConfig {
     public static synchronized void initialize() {
         if (initialized) return;
 
-        String dbUrl = getConfigValue(ENV_DB_URL, DEFAULT_ORACLE_URL);
+        String rawUrl = getConfigValue(ENV_DB_URL, DEFAULT_ORACLE_URL);
+        String rawUser = getConfigValue(ENV_DB_USER, DEFAULT_ORACLE_USER);
+        String rawPass = getConfigValue(ENV_DB_PASS, DEFAULT_ORACLE_PASS);
+
+        // Auto-adapt Supabase direct IPv6 URLs to the IPv4 pooler
+        activeUrl = resolveDbUrl(rawUrl);
+        activeUser = resolveDbUser(rawUser, rawUrl);
+        activePass = rawPass;
+
         String dbDriver;
-        if (dbUrl.startsWith("jdbc:postgresql:")) {
+        if (activeUrl.startsWith("jdbc:postgresql:")) {
             dbDriver = "org.postgresql.Driver";
-        } else if (dbUrl.startsWith("jdbc:oracle:")) {
+        } else if (activeUrl.startsWith("jdbc:oracle:")) {
             dbDriver = "oracle.jdbc.OracleDriver";
         } else {
             dbDriver = getConfigValue(ENV_DB_DRIVER, DEFAULT_ORACLE_DRIVER);
         }
-        String dbUser = getConfigValue(ENV_DB_USER, DEFAULT_ORACLE_USER);
-        String dbPass = getConfigValue(ENV_DB_PASS, DEFAULT_ORACLE_PASS);
 
-        targetUrl = dbUrl;
-        LOGGER.info("VEIL Initializing JDBC connection pool targeting: " + dbUrl + " with driver: " + dbDriver);
+        targetUrl = activeUrl;
+        LOGGER.info("VEIL Initializing JDBC connection pool targeting: " + activeUrl + " with user: " + activeUser + " and driver: " + dbDriver);
 
         try {
             Class.forName(dbDriver);
-            try (Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPass)) {
+            try (Connection conn = DriverManager.getConnection(activeUrl, activeUser, activePass)) {
                 String prodName = conn.getMetaData().getDatabaseProductName();
                 String prodVer = conn.getMetaData().getDatabaseProductVersion();
                 LOGGER.info("Successfully connected to primary Database! Metadata: " + prodName + " " + prodVer);
@@ -92,6 +101,30 @@ public class DatabaseConfig {
         }
 
         initialized = true;
+    }
+
+    private static String resolveDbUrl(String rawUrl) {
+        if (rawUrl != null && rawUrl.contains("db.") && rawUrl.contains(".supabase.co")) {
+            java.util.regex.Pattern p = java.util.regex.Pattern.compile("db\\.([a-zA-Z0-9]+)\\.supabase\\.co");
+            java.util.regex.Matcher m = p.matcher(rawUrl);
+            if (m.find()) {
+                String projectRef = m.group(1);
+                // Map to Supabase Sydney pooler (or general pooler)
+                return rawUrl.replace("db." + projectRef + ".supabase.co", "aws-0-ap-southeast-2.pooler.supabase.com");
+            }
+        }
+        return rawUrl;
+    }
+
+    private static String resolveDbUser(String rawUser, String rawUrl) {
+        if (rawUser != null && rawUser.equals("postgres") && rawUrl != null && rawUrl.contains("supabase")) {
+            java.util.regex.Pattern p = java.util.regex.Pattern.compile("([a-zA-Z0-9]{15,30})");
+            java.util.regex.Matcher m = p.matcher(rawUrl);
+            if (m.find()) {
+                return "postgres." + m.group(1);
+            }
+        }
+        return rawUser;
     }
 
     private static String getConfigValue(String key, String defaultValue) {
@@ -118,14 +151,10 @@ public class DatabaseConfig {
             return DriverManager.getConnection(FALLBACK_H2_URL, FALLBACK_H2_USER, FALLBACK_H2_PASS);
         }
 
-        String oracleUrl = getConfigValue(ENV_DB_URL, DEFAULT_ORACLE_URL);
-        String oracleUser = getConfigValue(ENV_DB_USER, DEFAULT_ORACLE_USER);
-        String oraclePass = getConfigValue(ENV_DB_PASS, DEFAULT_ORACLE_PASS);
-
         try {
-            return DriverManager.getConnection(oracleUrl, oracleUser, oraclePass);
+            return DriverManager.getConnection(activeUrl, activeUser, activePass);
         } catch (SQLException ex) {
-            LOGGER.warning("Oracle connection dropped (" + ex.getMessage() + "), routing to standalone engine.");
+            LOGGER.warning("Database connection dropped (" + ex.getMessage() + "), routing to standalone engine.");
             useFallback = true;
             activeEngineName = "Embedded Oracle-Compatible JDBC (Standalone Demonstration Mode)";
             bootstrapFallbackDatabase();
