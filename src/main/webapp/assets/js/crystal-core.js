@@ -106,26 +106,26 @@
 
     function setupLighting() {
         // Balanced ambient light tuned to warm Sand environment
-        const ambientLight = new THREE.AmbientLight(0xFFFAF2, 0.55);
+        const ambientLight = new THREE.AmbientLight(0xFFFAF2, 0.45);
         scene.add(ambientLight);
 
         // Main key light from upper-right front (creates sharp specular facet highlights)
-        const keyLight = new THREE.DirectionalLight(0xE6FFF6, 1.25);
+        const keyLight = new THREE.DirectionalLight(0xE6FFF6, 1.35);
         keyLight.position.set(3.2, 4.0, 4.0);
         scene.add(keyLight);
 
         // Rim light from rear-left to give crisp cyan edge contouring
-        const rimLight = new THREE.DirectionalLight(0x60E8D4, 0.85);
-        rimLight.position.set(-3.5, 2.0, -2.5);
+        const rimLight = new THREE.DirectionalLight(0x50E0C8, 0.95);
+        rimLight.position.set(-3.5, 2.5, -2.5);
         scene.add(rimLight);
 
-        // Internal emerald point light inside the crystal core to create luminous depth
-        const corePointLight = new THREE.PointLight(0x00FFBB, 1.8, 6.0);
-        corePointLight.position.set(0, 0.35, 0.4);
+        // Internal emerald point light positioned slightly behind core to glow from within
+        const corePointLight = new THREE.PointLight(0x00E5B8, 1.2, 5.0);
+        corePointLight.position.set(0, 0.25, -0.1);
         scene.add(corePointLight);
 
         // Soft bounce light from the sand floor/pedestal below
-        const bounceLight = new THREE.DirectionalLight(0xF0EDE6, 0.4);
+        const bounceLight = new THREE.DirectionalLight(0xF0EDE6, 0.35);
         bounceLight.position.set(0, -3.0, 2.0);
         scene.add(bounceLight);
     }
@@ -241,11 +241,10 @@
         coreGeo.center();
 
         const coreMat = new THREE.MeshStandardMaterial({
-            color: COLORS.cyprus,
-            emissive: 0x00241E,
-            emissiveIntensity: 0.45,
-            roughness: 0.14,
-            metalness: 0.22,
+            color: 0x004741,
+            emissive: 0x001A16,
+            roughness: 0.12,
+            metalness: 0.35,
             flatShading: true // Essential for cut-gemstone facet specular glints
         });
 
@@ -258,7 +257,7 @@
         const badgeMat = new THREE.MeshBasicMaterial({
             map: badgeTexture,
             transparent: true,
-            opacity: 0.96,
+            opacity: 0.98,
             depthWrite: false
         });
         insigniaBadgeMesh = new THREE.Mesh(badgeGeo, badgeMat);
@@ -278,16 +277,16 @@
         midGeo.center();
 
         const midMat = new THREE.MeshStandardMaterial({
-            color: COLORS.cyprusMid,
+            color: 0x0A5C52,
             transparent: true,
-            opacity: 0.35,
-            roughness: 0.10,
-            metalness: 0.10,
+            opacity: 0.18,
+            roughness: 0.08,
+            metalness: 0.15,
             depthWrite: false
         });
 
         innerGlassMesh = new THREE.Mesh(midGeo, midMat);
-        innerGlassMesh.position.z = 0.04;
+        innerGlassMesh.position.z = 0.02;
         shieldGroup.add(innerGlassMesh);
 
         // 4. Outer Translucent Crystal Glass Exoskeleton
@@ -303,11 +302,11 @@
         outerGeo.center();
 
         const outerMat = new THREE.MeshStandardMaterial({
-            color: COLORS.glassOuter,
+            color: 0xE6F8F4,
             transparent: true,
-            opacity: 0.38,
-            roughness: 0.08,
-            metalness: 0.12,
+            opacity: 0.22, // Crystal clear clarity so inner dark emerald core pops through with high contrast
+            roughness: 0.05,
+            metalness: 0.15,
             depthWrite: false
         });
 
