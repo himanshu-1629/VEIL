@@ -85,6 +85,12 @@ function switchView(viewName) {
         btn.classList.toggle('active', btn.getAttribute('data-target') === viewName);
     });
 
+    // Also highlight the More Info dropdown trigger if either 'about' or 'mechanism' is active
+    const dropdownTrigger = document.getElementById('nav-dropdown-trigger');
+    if (dropdownTrigger) {
+        dropdownTrigger.classList.toggle('active', viewName === 'about' || viewName === 'mechanism');
+    }
+
     // Update active view section
     document.querySelectorAll('.view-section').forEach(sec => {
         sec.classList.remove('active');
@@ -102,6 +108,38 @@ function switchView(viewName) {
         loadUsers();
     }
 }
+
+// --- MORE INFO DROPDOWN CONTROLLER ---
+function toggleNavDropdown(e) {
+    if (e) e.stopPropagation();
+    const wrapper = document.getElementById('nav-dropdown-wrapper');
+    const trigger = document.getElementById('nav-dropdown-trigger');
+    if (!wrapper) return;
+    const isOpen = wrapper.classList.toggle('open');
+    if (trigger) trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+}
+
+function closeNavDropdown() {
+    const wrapper = document.getElementById('nav-dropdown-wrapper');
+    const trigger = document.getElementById('nav-dropdown-trigger');
+    if (wrapper) wrapper.classList.remove('open');
+    if (trigger) trigger.setAttribute('aria-expanded', 'false');
+}
+
+function selectNavDropdown(targetView) {
+    switchView(targetView);
+    closeNavDropdown();
+}
+
+// Global click outside to dismiss navigation dropdown
+document.addEventListener('click', (e) => {
+    const wrapper = document.getElementById('nav-dropdown-wrapper');
+    if (wrapper && wrapper.classList.contains('open')) {
+        if (!wrapper.contains(e.target)) {
+            closeNavDropdown();
+        }
+    }
+});
 
 // --- DASHBOARD TELEMETRY CONTROLLER ---
 async function loadDashboard() {

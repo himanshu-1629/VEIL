@@ -312,6 +312,86 @@ a:hover {
   box-shadow: 0 2px 6px rgba(0, 71, 65, 0.2);
 }
 
+/* --- Navigation Dropdown (More Info) --- */
+.nav-dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.nav-dropdown-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dropdown-chevron {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  color: currentColor;
+  margin-left: 2px;
+}
+
+.nav-dropdown-wrapper.open .dropdown-chevron {
+  transform: rotate(180deg);
+}
+
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 280px;
+  background: var(--surface-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-medium);
+  box-shadow: 0 8px 20px rgba(0, 71, 65, 0.10);
+  padding: 6px;
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 200;
+  animation: dropdownFade 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-dropdown-wrapper.open .nav-dropdown-menu {
+  display: flex;
+}
+
+@keyframes dropdownFade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.nav-dropdown-item {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-small);
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.nav-dropdown-item:hover {
+  background: var(--cyprus-soft);
+  border-color: var(--cyprus-mid);
+}
+
+.dropdown-item-title {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.90rem;
+  color: var(--cyprus-deep);
+}
+
+.dropdown-item-sub {
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
 .nav-user-panel {
   display: flex;
   align-items: center;
@@ -1424,9 +1504,118 @@ a:hover {
 }
 
 .about-stat-lbl {
-  font-size: 0.76rem;
+  font-size: 0.80rem;
   color: var(--muted);
   font-weight: 500;
+}
+
+/* --- 12C. MECHANISM VIEW (SYSTEM ARCHITECTURE & OPERATIONAL WORKFLOW) --- */
+.mechanism-pipeline-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+.mechanism-step-card {
+  padding: var(--space-6);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.mechanism-step-num {
+  font-family: var(--font-mono);
+  font-size: 0.80rem;
+  font-weight: 700;
+  color: var(--cyprus);
+  background: var(--cyprus-soft);
+  border: 1px solid var(--cyprus-mid);
+  padding: 3px 8px;
+  border-radius: var(--radius-small);
+  width: fit-content;
+  margin-bottom: var(--space-3);
+  letter-spacing: 0.04em;
+}
+
+.mechanism-step-title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--cyprus-deep);
+  margin-bottom: var(--space-2);
+  line-height: 1.25;
+}
+
+.mechanism-step-desc {
+  font-size: 0.86rem;
+  color: var(--muted-strong);
+  line-height: 1.55;
+  flex-grow: 1;
+}
+
+.mechanism-deep-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
+}
+
+.mechanism-deep-card {
+  padding: var(--space-8);
+  display: flex;
+  flex-direction: column;
+}
+
+.mechanism-badge {
+  font-family: var(--font-mono);
+  font-size: 0.80rem;
+  font-weight: 700;
+  color: var(--cyprus);
+  background: var(--cyprus-soft);
+  border: 1px solid var(--cyprus-mid);
+  padding: 4px 10px;
+  border-radius: var(--radius-small);
+  width: fit-content;
+  margin-bottom: var(--space-3);
+  letter-spacing: 0.04em;
+}
+
+.mechanism-card-title {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  color: var(--cyprus-deep);
+  margin-bottom: var(--space-3);
+}
+
+.mechanism-card-body {
+  font-size: 0.90rem;
+  line-height: 1.6;
+  color: var(--muted-strong);
+  margin-bottom: var(--space-4);
+}
+
+.mechanism-feature-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-4);
+  margin-top: auto;
+}
+
+.mechanism-feature-item {
+  font-size: 0.84rem;
+  color: var(--ink);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.45;
+}
+
+.mechanism-feature-bullet {
+  color: var(--cyprus);
+  font-weight: bold;
 }
 
 /* --- 13. RESPONSIVE DESIGN --- */
@@ -1435,6 +1624,12 @@ a:hover {
     grid-template-columns: 1fr;
   }
   .featured-threat-box {
+    grid-template-columns: 1fr;
+  }
+  .mechanism-pipeline-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .mechanism-deep-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -1460,6 +1655,9 @@ a:hover {
   }
   .about-stats-row {
     grid-template-columns: 1fr 1fr;
+  }
+  .mechanism-pipeline-grid {
+    grid-template-columns: 1fr;
   }
   .meta-field-grid {
     grid-template-columns: 1fr;
