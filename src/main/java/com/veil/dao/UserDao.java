@@ -61,8 +61,8 @@ public class UserDao {
     }
 
     public User createUser(User user) throws SQLException {
-        // Oracle-compatible sequence fetch or insert
-        String seqSql = "SELECT USER_SEQ.NEXTVAL FROM DUAL";
+        // Oracle-compatible or PostgreSQL-compatible sequence fetch
+        String seqSql = DatabaseConfig.isPostgres() ? "SELECT nextval('USER_SEQ')" : "SELECT USER_SEQ.NEXTVAL FROM DUAL";
         long newId;
 
         try (Connection conn = DatabaseConfig.getConnection()) {

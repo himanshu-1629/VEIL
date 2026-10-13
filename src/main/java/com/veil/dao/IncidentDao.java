@@ -13,7 +13,7 @@ import java.util.*;
 public class IncidentDao {
 
     public Incident createIncident(Incident incident) throws SQLException {
-        String seqSql = "SELECT INCIDENT_SEQ.NEXTVAL FROM DUAL";
+        String seqSql = DatabaseConfig.isPostgres() ? "SELECT nextval('INCIDENT_SEQ')" : "SELECT INCIDENT_SEQ.NEXTVAL FROM DUAL";
         long newId;
 
         try (Connection conn = DatabaseConfig.getConnection()) {

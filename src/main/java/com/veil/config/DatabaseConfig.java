@@ -39,6 +39,7 @@ public class DatabaseConfig {
 
     private static volatile boolean useFallback = false;
     private static volatile boolean initialized = false;
+    private static volatile boolean isPostgres = false;
     private static String activeEngineName = "Oracle Database";
 
     static {
@@ -48,23 +49,29 @@ public class DatabaseConfig {
     public static synchronized void initialize() {
         if (initialized) return;
 
-        String oracleDriver = getConfigValue(ENV_DB_DRIVER, DEFAULT_ORACLE_DRIVER);
-        String oracleUrl = getConfigValue(ENV_DB_URL, DEFAULT_ORACLE_URL);
-        String oracleUser = getConfigValue(ENV_DB_USER, DEFAULT_ORACLE_USER);
-        String oraclePass = getConfigValue(ENV_DB_PASS, DEFAULT_ORACLE_PASS);
+        String dbUrl = getConfigValue(ENV_DB_URL, DEFAULT_ORACLE_URL);
+        String defaultDriver = DEFAULT_ORACLE_DRIVER;
+        if (dbUrl.startsWith("jdbc:postgresql:")) {
+            defaultDriver = "org.postgresql.Driver";
+        }
+        String dbDriver = getConfigValue(ENV_DB_DRIVER, defaultDriver);
+        String dbUser = getConfigValue(ENV_DB_USER, DEFAULT_ORACLE_USER);
+        String dbPass = getConfigValue(ENV_DB_PASS, DEFAULT_ORACLE_PASS);
 
-        LOGGER.info("VEIL Initializing JDBC connection pool targeting: " + oracleUrl);
+        LOGGER.info("VEIL Initializing JDBC connection pool targeting: " + dbUrl);
 
         try {
-            Class.forName(oracleDriver);
-            try (Connection conn = DriverManager.getConnection(oracleUrl, oracleUser, oraclePass)) {
-                LOGGER.info("Successfully connected to primary Oracle Database! Metadata: " 
-                    + conn.getMetaData().getDatabaseProductName() + " " + conn.getMetaData().getDatabaseProductVersion());
-                activeEngineName = conn.getMetaData().getDatabaseProductName() + " (" + conn.getMetaData().getDatabaseProductVersion() + ")";
+            Class.forName(dbDriver);
+            try (Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPass)) {
+                String prodName = conn.getMetaData().getDatabaseProductName();
+                String prodVer = conn.getMetaData().getDatabaseProductVersion();
+                LOGGER.info("Successfully connected to primary Database! Metadata: " + prodName + " " + prodVer);
+                activeEngineName = prodName + " (" + prodVer + ")";
+                isPostgres = prodName != null && prodName.toLowerCase().contains("postgres");
                 useFallback = false;
             }
         } catch (Exception e) {
-            LOGGER.warning("Could not connect to Oracle Database (" + e.getMessage() + ").");
+            LOGGER.warning("Could not connect to Database (" + e.getMessage() + ").");
             LOGGER.info("Activating embedded Oracle-mode JDBC engine for offline evaluation and defense.");
             try {
                 Class.forName(FALLBACK_H2_DRIVER);
@@ -124,6 +131,10 @@ public class DatabaseConfig {
 
     public static boolean isUsingFallback() {
         return useFallback;
+    }
+
+    public static boolean isPostgres() {
+        return isPostgres;
     }
 
     /**

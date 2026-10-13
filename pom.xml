@@ -34,6 +34,13 @@
             <version>19.3.0.0</version>
         </dependency>
 
+        <!-- PostgreSQL JDBC Driver (Compatible with Supabase, Neon, AWS RDS) -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.2</version>
+        </dependency>
+
         <!-- Google Gson for JSON processing -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
