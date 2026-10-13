@@ -104,13 +104,16 @@ public class DatabaseConfig {
     }
 
     private static String resolveDbUrl(String rawUrl) {
-        if (rawUrl != null && rawUrl.contains("db.") && rawUrl.contains(".supabase.co")) {
-            java.util.regex.Pattern p = java.util.regex.Pattern.compile("db\\.([a-zA-Z0-9]+)\\.supabase\\.co");
+        if (rawUrl != null && rawUrl.contains("supabase")) {
+            // Replace direct db.<ref>.supabase.co host with IPv4 pooler and port 6543
+            java.util.regex.Pattern p = java.util.regex.Pattern.compile("db\\.([a-zA-Z0-9]+)\\.supabase\\.co(:\\d+)?");
             java.util.regex.Matcher m = p.matcher(rawUrl);
             if (m.find()) {
-                String projectRef = m.group(1);
-                // Map to Supabase Sydney pooler (or general pooler)
-                return rawUrl.replace("db." + projectRef + ".supabase.co", "aws-0-ap-southeast-2.pooler.supabase.com");
+                return rawUrl.replace(m.group(0), "aws-0-ap-southeast-2.pooler.supabase.com:6543");
+            }
+            // If already pooler on 5432, switch to port 6543
+            if (rawUrl.contains(".pooler.supabase.com:5432")) {
+                return rawUrl.replace(".pooler.supabase.com:5432", ".pooler.supabase.com:6543");
             }
         }
         return rawUrl;
