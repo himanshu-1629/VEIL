@@ -1,13 +1,12 @@
 # VEIL — Cybersecurity Management System
 
-> **Brand Expansion:** Visualize. Evaluate. Investigate. Lock.  
-> **Brand Tagline:** *"See beyond the surface. Secure what matters."*  
-> **Academic Purpose:** PAT 4 Web Application Development  
-> **Backend Architecture:** Java Servlets (Java EE / Jakarta EE) + JDBC  
-> **Database:** Oracle Database 11g / 12c / 19c / 21c  
-> **Frontend:** HTML5 &bull; CSS3 &bull; Vanilla JavaScript (Fetch API)  
-> **Application Server:** Apache Tomcat 9.0  
-> **Build System:** Apache Maven 3.8+ / Maven Wrapper  
+> 🌐 **Live Public Deployment:** [https://veil-v8gx.onrender.com](https://veil-v8gx.onrender.com)  
+> ⚡ **Cloud Latency Notice:** Deployed on Render Free Tier + Cloud Supabase PostgreSQL 17. If inactive for >15 minutes, Render spins down container to preserve resources; initial access takes ~30–50 seconds on cold start. Once awake, performance is instantaneous and preserved by an automated 10-minute background keep-alive daemon.  
+> 👨‍🏫 **Faculty Guide:** Dr. A. Swaminathan Sir  
+> 🎓 **Author:** Himanshu Singh (PAT 4 Web Application Development Laboratory Experiment)  
+> 🛡️ **Brand Expansion:** Visualize. Evaluate. Investigate. Lock.  
+> 🔒 **Brand Tagline:** *"See beyond the surface. Secure what matters."*  
+> ⚙️ **Architecture:** Java Servlets (Java EE 8 / Tomcat 9) + JDBC + Cloud Supabase PostgreSQL / Oracle 23ai  
 
 ---
 
@@ -64,18 +63,22 @@ VEIL directly addresses these challenges by pairing an art-directed, high-contra
 
 ## 6. Technology Stack
 
-| Layer | Component | Version / Specification |
-|---|---|---|
-| **Frontend Structure** | Semantic HTML5 | W3C Validated, Accessible |
-| **Frontend Styling** | Vanilla CSS3 | Custom Properties, Subtle Morphism, Light Mode Only |
-| **Frontend Logic** | Vanilla JavaScript (ES6+) | Fetch API, REST Integration, No frameworks |
-| **Backend Engine** | Java Servlets | Java EE 8 (Servlet 4.0 API) |
-| **Persistence** | JDBC (Java Database Connectivity) | `PreparedStatement`, Connection Pooling, Transactions |
-| **Database** | Oracle Database | Oracle 11g XE / 12c / 19c Enterprise |
-| **Security / Crypto** | jBCrypt | BCrypt cost factor 10 |
-| **Data Interchange** | Google Gson | 2.10.1 (Strict JSON envelopes) |
-| **Application Server** | Apache Tomcat | 9.0.x |
-| **Build Automation** | Apache Maven | Maven 3.10 / `./mvnw` Wrapper |
+| Layer | Component | Version / Specification | Details |
+|---|---|---|---|
+| **Frontend Structure** | Semantic HTML5 | HTML5 Living Standard | W3C compliant, semantic tags, zero external UI libraries |
+| **Frontend Styling** | Vanilla CSS3 | Custom Properties | Strict Cyprus (`#004741`) & Sand (`#F0EDE6`) Light Mode |
+| **Frontend Dynamics** | Vanilla JavaScript | ES6+ Modern JS | Native Fetch API, Dynamic DOM, zero dependencies |
+| **3D Visual Core** | CSS 3D Transforms | Hardware-Accelerated | Rotating 4-facet cybersecurity crystal core with status glow |
+| **Backend Framework** | Java Servlets | Java EE 8 (Servlet 4.0 API) | Multi-tier REST controllers (`/api/auth`, `/api/incidents`, etc.) |
+| **Application Server** | Apache Tomcat | Tomcat 9.0 (JRE 11) | Eclipse Temurin 11 runtime containerized with Maven 3.8 |
+| **Persistence Engine** | JDBC Thin Architecture | Standard `java.sql` | `PreparedStatement`, atomic commits, connection decoupling |
+| **Cloud Database (24/7)** | Cloud Supabase | PostgreSQL 17.11 | Hosted 24/7 on AWS Sydney; accessed via IPv4 Transaction Pooler (Port 6543) |
+| **Lab/On-Prem Database** | Oracle Database | Oracle 23ai / 19c / 11g | Supported via `ojdbc8` thin driver (`localhost:1521/FREEPDB1`) |
+| **Fallback Engine** | Embedded JDBC | In-Memory Oracle Mode H2 | Auto-boots if no external DB reachable, guaranteeing zero viva failures |
+| **Password Cryptography** | jBCrypt | BCrypt Cost Factor 10 | Irreversible salted hashing for all user accounts |
+| **Data Interchange** | Google Gson | 2.10.1 | Strict standardized API response envelopes (`{success, data, message}`) |
+| **Cloud Deployment** | Render.com PaaS | Multi-Stage Dockerfile | Deployed at `https://veil-v8gx.onrender.com` with dynamic `$PORT` binding |
+| **Availability Daemon** | KeepAliveListener | Java ScheduledExecutor | Automatic 10-minute self-ping to prevent Render 15-minute idle spin-down |
 
 ---
 
@@ -511,4 +514,171 @@ See [docs/ONLINE_DEPLOYMENT.md](docs/ONLINE_DEPLOYMENT.md) for step-by-step inst
 - **Faculty Guide:** Dr. A. Swaminathan Sir
 - **Academic Context:** PAT 4 Web Application Development Laboratory Experiment
 - **Evaluation Criteria:** Relational Constraints, Multi-Tier Java Servlets, PreparedStatements, Session RBAC, Zero-Hardcode Config, Remote Oracle SQL*Plus & JDBC Validation.
+
+---
+
+## 36. Complete Database Operations Catalog (DDL, DML, DQL, TCL)
+
+VEIL implements a comprehensive catalog of relational database commands across both Oracle Database 23ai/19c and Cloud Supabase PostgreSQL 17.
+
+### A. Data Definition Language (DDL)
+
+```sql
+-- 1. Sequence Creation (Auto-increment surrogate keys)
+CREATE SEQUENCE USER_SEQ START WITH 1004 INCREMENT BY 1;
+CREATE SEQUENCE INCIDENT_SEQ START WITH 5011 INCREMENT BY 1;
+
+-- 2. System Users Table with Domain Constraints
+CREATE TABLE SYSTEM_USERS (
+    USER_ID BIGINT PRIMARY KEY,
+    USER_NAME VARCHAR(50) NOT NULL,
+    EMAIL VARCHAR(100) UNIQUE NOT NULL,
+    PASSWORD_HASH VARCHAR(255) NOT NULL,
+    ROLE VARCHAR(10) NOT NULL CHECK (ROLE IN ('ADMIN', 'USER')),
+    ACCOUNT_STATUS VARCHAR(20) DEFAULT 'ACTIVE' NOT NULL CHECK (ACCOUNT_STATUS IN ('ACTIVE', 'SUSPENDED')),
+    CREATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- 3. Security Incident Table with Referential Integrity & Range Constraints
+CREATE TABLE SECURITY_INCIDENT (
+    INCIDENT_ID BIGINT PRIMARY KEY,
+    USER_ID BIGINT NOT NULL,
+    THREAT VARCHAR(200) NOT NULL,
+    INCIDENT_TYPE VARCHAR(50) NOT NULL,
+    AFFECTED_SYSTEM VARCHAR(100) NOT NULL,
+    DESCRIPTION VARCHAR(2000) NOT NULL,
+    SEVERITY SMALLINT NOT NULL CHECK (SEVERITY BETWEEN 1 AND 10),
+    STATUS VARCHAR(20) DEFAULT 'Open' NOT NULL CHECK (STATUS IN ('Open', 'In Progress', 'Resolved')),
+    REPORTED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    UPDATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT FK_INCIDENT_USER FOREIGN KEY (USER_ID) REFERENCES SYSTEM_USERS(USER_ID) ON DELETE CASCADE
+);
+```
+
+### B. Data Manipulation Language (DML)
+
+```sql
+-- 1. User Ingestion (Insert with BCrypt Hash)
+INSERT INTO SYSTEM_USERS (USER_ID, USER_NAME, EMAIL, PASSWORD_HASH, ROLE, ACCOUNT_STATUS, CREATED_AT)
+VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP);
+
+-- 2. Security Incident Ingestion (Atomic INSERT)
+INSERT INTO SECURITY_INCIDENT (
+    INCIDENT_ID, USER_ID, THREAT, INCIDENT_TYPE, AFFECTED_SYSTEM, DESCRIPTION, SEVERITY, STATUS, REPORTED_AT, UPDATED_AT
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- 3. Incident State Modification (Full Update)
+UPDATE SECURITY_INCIDENT SET 
+    THREAT = ?, INCIDENT_TYPE = ?, AFFECTED_SYSTEM = ?, DESCRIPTION = ?, 
+    SEVERITY = ?, STATUS = ?, UPDATED_AT = CURRENT_TIMESTAMP 
+WHERE INCIDENT_ID = ?;
+
+-- 4. Workflow Transition (Fast Status Triage)
+UPDATE SECURITY_INCIDENT SET 
+    STATUS = ?, UPDATED_AT = CURRENT_TIMESTAMP 
+WHERE INCIDENT_ID = ?;
+
+-- 5. User Account Modification
+UPDATE SYSTEM_USERS SET 
+    USER_NAME = ?, EMAIL = ?, ROLE = ?, ACCOUNT_STATUS = ? 
+WHERE USER_ID = ?;
+
+-- 6. User Password Rotation
+UPDATE SYSTEM_USERS SET 
+    PASSWORD_HASH = ? 
+WHERE USER_ID = ?;
+
+-- 7. Incident Deletion
+DELETE FROM SECURITY_INCIDENT WHERE INCIDENT_ID = ?;
+
+-- 8. User Deletion (Cascades automatically to incidents)
+DELETE FROM SYSTEM_USERS WHERE USER_ID = ?;
+```
+
+### C. Data Query Language (DQL)
+
+```sql
+-- 1. Dynamic Multi-Criteria Search & Filtering (with Numeric Incident ID Parsing)
+SELECT i.INCIDENT_ID, i.USER_ID, u.USER_NAME, u.EMAIL, i.THREAT, i.INCIDENT_TYPE,
+       i.AFFECTED_SYSTEM, i.DESCRIPTION, i.SEVERITY, i.STATUS, i.REPORTED_AT, i.UPDATED_AT
+FROM SECURITY_INCIDENT i
+LEFT JOIN SYSTEM_USERS u ON i.USER_ID = u.USER_ID
+WHERE 1=1
+  AND (LOWER(i.THREAT) LIKE ? 
+       OR LOWER(i.AFFECTED_SYSTEM) LIKE ? 
+       OR LOWER(u.USER_NAME) LIKE ? 
+       OR LOWER(i.INCIDENT_TYPE) LIKE ? 
+       OR LOWER(i.DESCRIPTION) LIKE ? 
+       OR i.INCIDENT_ID = ? 
+       OR CAST(i.INCIDENT_ID AS VARCHAR(30)) LIKE ?)
+  AND i.STATUS = ?
+  AND i.SEVERITY >= ? AND i.SEVERITY <= ?
+ORDER BY i.REPORTED_AT DESC;
+
+-- 2. Real-Time Aggregate Dashboard Analytics
+SELECT 
+    COUNT(*) AS TOTAL,
+    COUNT(CASE WHEN STATUS = 'Open' THEN 1 END) AS OPEN_CNT,
+    COUNT(CASE WHEN STATUS = 'In Progress' THEN 1 END) AS IN_PROG_CNT,
+    COUNT(CASE WHEN STATUS = 'Resolved' THEN 1 END) AS RESOLVED_CNT,
+    COUNT(CASE WHEN SEVERITY BETWEEN 7 AND 8 THEN 1 END) AS HIGH_CNT,
+    COUNT(CASE WHEN SEVERITY BETWEEN 9 AND 10 THEN 1 END) AS CRITICAL_CNT
+FROM SECURITY_INCIDENT;
+
+-- 3. Severity Distribution Segmentation (Categorical Aggregation)
+SELECT 
+  CASE 
+    WHEN SEVERITY BETWEEN 1 AND 3 THEN 'Low (1-3)'
+    WHEN SEVERITY BETWEEN 4 AND 6 THEN 'Medium (4-6)'
+    WHEN SEVERITY BETWEEN 7 AND 8 THEN 'High (7-8)'
+    WHEN SEVERITY BETWEEN 9 AND 10 THEN 'Critical (9-10)'
+  END AS SEV_CAT, COUNT(*) AS CNT
+FROM SECURITY_INCIDENT
+GROUP BY CASE 
+  WHEN SEVERITY BETWEEN 1 AND 3 THEN 'Low (1-3)'
+  WHEN SEVERITY BETWEEN 4 AND 6 THEN 'Medium (4-6)'
+  WHEN SEVERITY BETWEEN 7 AND 8 THEN 'High (7-8)'
+  WHEN SEVERITY BETWEEN 9 AND 10 THEN 'Critical (9-10)'
+END;
+
+-- 4. Featured Critical Incident Selection (Filtered by Severity & Date)
+SELECT i.INCIDENT_ID, i.USER_ID, u.USER_NAME, u.EMAIL, i.THREAT, i.INCIDENT_TYPE,
+       i.AFFECTED_SYSTEM, i.DESCRIPTION, i.SEVERITY, i.STATUS, i.REPORTED_AT, i.UPDATED_AT
+FROM SECURITY_INCIDENT i
+LEFT JOIN SYSTEM_USERS u ON i.USER_ID = u.USER_ID
+WHERE i.STATUS IN ('Open', 'In Progress')
+ORDER BY i.SEVERITY DESC, i.REPORTED_AT ASC;
+```
+
+### D. Transaction Control Language (TCL)
+
+Implemented via Java JDBC Connection API:
+```java
+// Atomic multi-statement sequence generation and insertion
+conn.setAutoCommit(false);
+try {
+    // 1. Fetch sequence nextval
+    // 2. Insert record
+    conn.commit();
+} catch (SQLException ex) {
+    conn.rollback();
+    throw ex;
+} finally {
+    conn.setAutoCommit(true);
+}
+```
+
+---
+
+## 37. Live Cloud Deployment & Performance Telemetry
+
+- **Live URL:** [https://veil-v8gx.onrender.com](https://veil-v8gx.onrender.com)
+- **Primary Database:** Cloud Supabase (PostgreSQL 17.11) via IPv4 Transaction Pooler (`aws-0-ap-southeast-2.pooler.supabase.com:6543`)
+- **Container Runtime:** Apache Tomcat 9.0 on Eclipse Temurin OpenJDK 11
+- **Latency / Cold-Start Behavior:**
+  - Render Free Tier instances enter an idle sleep state after 15 minutes of zero traffic.
+  - Initial cold-start takes approximately **30–50 seconds** while the container starts.
+  - Once started, all subsequent requests respond with low latency (~50–150ms).
+  - To minimize sleep occurrences, VEIL runs an internal background [`KeepAliveListener`](src/main/java/com/veil/listener/KeepAliveListener.java) that sends self-heartbeat pings every 10 minutes.
+
 
