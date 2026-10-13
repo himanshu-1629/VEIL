@@ -239,6 +239,8 @@ public class IncidentDao {
     public DashboardSummary getDashboardSummary() throws SQLException {
         DashboardSummary summary = new DashboardSummary();
         summary.setDatabaseEngine(DatabaseConfig.getActiveEngineName());
+        summary.setConnectionError(DatabaseConfig.getLastConnectionError());
+        summary.setTargetUrl(DatabaseConfig.getTargetUrl());
 
         // 1. Overall counts
         String countsSql = "SELECT " +

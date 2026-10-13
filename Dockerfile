@@ -33,7 +33,6 @@ COPY --from=builder /app/target/veil.war webapps/ROOT.war
 EXPOSE 8080
 
 # Environment variables for zero-hardcoding database connection
-ENV VEIL_DB_DRIVER="oracle.jdbc.OracleDriver"
 ENV VEIL_DB_URL=""
 ENV VEIL_DB_USER=""
 ENV VEIL_DB_PASSWORD=""

@@ -23,6 +23,8 @@ public class DashboardSummary implements Serializable {
     private Map<String, Integer> statusDistribution;
     private List<Incident> recentIncidents;
     private String operationalPosture;
+    private String connectionError;
+    private String targetUrl;
 
     public DashboardSummary() {}
 
@@ -120,5 +122,21 @@ public class DashboardSummary implements Serializable {
 
     public void setOperationalPosture(String operationalPosture) {
         this.operationalPosture = operationalPosture;
+    }
+
+    public String getConnectionError() {
+        return connectionError;
+    }
+
+    public void setConnectionError(String connectionError) {
+        this.connectionError = connectionError;
+    }
+
+    public String getTargetUrl() {
+        return targetUrl;
+    }
+
+    public void setTargetUrl(String targetUrl) {
+        this.targetUrl = targetUrl;
     }
 }

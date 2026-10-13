@@ -40,6 +40,8 @@ public class DatabaseConfig {
     private static volatile boolean useFallback = false;
     private static volatile boolean initialized = false;
     private static volatile boolean isPostgres = false;
+    private static volatile String lastConnectionError = null;
+    private static volatile String targetUrl = null;
     private static String activeEngineName = "Oracle Database";
 
     static {
@@ -50,15 +52,19 @@ public class DatabaseConfig {
         if (initialized) return;
 
         String dbUrl = getConfigValue(ENV_DB_URL, DEFAULT_ORACLE_URL);
-        String defaultDriver = DEFAULT_ORACLE_DRIVER;
+        String dbDriver;
         if (dbUrl.startsWith("jdbc:postgresql:")) {
-            defaultDriver = "org.postgresql.Driver";
+            dbDriver = "org.postgresql.Driver";
+        } else if (dbUrl.startsWith("jdbc:oracle:")) {
+            dbDriver = "oracle.jdbc.OracleDriver";
+        } else {
+            dbDriver = getConfigValue(ENV_DB_DRIVER, DEFAULT_ORACLE_DRIVER);
         }
-        String dbDriver = getConfigValue(ENV_DB_DRIVER, defaultDriver);
         String dbUser = getConfigValue(ENV_DB_USER, DEFAULT_ORACLE_USER);
         String dbPass = getConfigValue(ENV_DB_PASS, DEFAULT_ORACLE_PASS);
 
-        LOGGER.info("VEIL Initializing JDBC connection pool targeting: " + dbUrl);
+        targetUrl = dbUrl;
+        LOGGER.info("VEIL Initializing JDBC connection pool targeting: " + dbUrl + " with driver: " + dbDriver);
 
         try {
             Class.forName(dbDriver);
@@ -69,9 +75,11 @@ public class DatabaseConfig {
                 activeEngineName = prodName + " (" + prodVer + ")";
                 isPostgres = prodName != null && prodName.toLowerCase().contains("postgres");
                 useFallback = false;
+                lastConnectionError = null;
             }
         } catch (Exception e) {
-            LOGGER.warning("Could not connect to Database (" + e.getMessage() + ").");
+            lastConnectionError = e.getClass().getSimpleName() + ": " + e.getMessage();
+            LOGGER.warning("Could not connect to Database (" + lastConnectionError + ").");
             LOGGER.info("Activating embedded Oracle-mode JDBC engine for offline evaluation and defense.");
             try {
                 Class.forName(FALLBACK_H2_DRIVER);
@@ -135,6 +143,14 @@ public class DatabaseConfig {
 
     public static boolean isPostgres() {
         return isPostgres;
+    }
+
+    public static String getLastConnectionError() {
+        return lastConnectionError;
+    }
+
+    public static String getTargetUrl() {
+        return targetUrl;
     }
 
     /**
