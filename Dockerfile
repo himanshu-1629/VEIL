@@ -38,5 +38,5 @@ ENV VEIL_DB_URL=""
 ENV VEIL_DB_USER=""
 ENV VEIL_DB_PASSWORD=""
 
-# Support dynamic cloud port binding (Render/Railway/Heroku injects $PORT)
-CMD ["sh", "-c", "if [ -n \"$PORT\" ]; then sed -i \"s/port=\\\"8080\\\"/port=\\\"$PORT\\\"/g\" conf/server.xml; fi && catalina.sh run"]
+# Support dynamic cloud port binding and disable shutdown port for container health checks
+CMD ["sh", "-c", "sed -i 's/port=\"8005\"/port=\"-1\"/g' conf/server.xml && if [ -n \"$PORT\" ]; then sed -i \"s/port=\\\"8080\\\"/port=\\\"$PORT\\\"/g\" conf/server.xml; fi && catalina.sh run"]
