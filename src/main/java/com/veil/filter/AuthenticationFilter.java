@@ -32,8 +32,8 @@ public class AuthenticationFilter implements Filter {
         String contextPath = req.getContextPath();
         String relativePath = path.substring(contextPath.length());
 
-        // Allow public auth endpoints
-        if (relativePath.equals("/api/auth/login") || relativePath.equals("/api/auth/me")) {
+        // Allow public endpoints
+        if (relativePath.equals("/api/auth/login") || relativePath.equals("/api/auth/me") || relativePath.equals("/api/health")) {
             chain.doFilter(request, response);
             return;
         }
